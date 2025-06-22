@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
-public class ExpenserImp implements Expenser {
+public class ExpenseCalculator implements Expenser {
     public User userAtHand;
 
-    public ExpenserImp(User user) {
+    public ExpenseCalculator(User user) {
         this.userAtHand = user;
     }
 
