@@ -72,8 +72,20 @@ public class ExpenseCalculator implements Expenser {
       
     }
 
-    public Currency convertForeignCurrency(Currency C, double amount) {
-        return C; //Placeholder return statement
+    public Currency convertForeignCurrency(Currency C, double amount, Boolean toUSD) {
+        Currency result = new Currency();
+    
+        if (toUSD) {
+            result.name = "USD";
+            result.rate = 1;
+            System.out.println("Your balance in USD from " + C.name + ": " + amount * C.rate);
+        } else {
+            result.name = C.name;
+            result.rate = C.rate;
+            System.out.println("Your balance in " + C.name + " from USD: " + amount / C.rate);
+        }
+    
+        return result;
     }
 
     public boolean loadExpenseFile(String filePath) {

@@ -22,7 +22,7 @@ public User userAtHand= null;
 	public void exportReport(String reportTitle);
 	//	As a user I would like to view my current balance in a different currency 
 	//Bonus : try to use the same convert function to convert from foreign currency to USD 
-	public Currency convertForeignCurrency(Currency C, double amount);
+	public Currency convertForeignCurrency(Currency C, double amount, Boolean toUSD);
 	//	As a user I would like to load multiple expenses from an external file all at once returning true if loaded successfully and false otherwise 
 	public boolean loadExpenseFile(String filePath); 
 	//	As a user I would like to load multiple income from an external file all at once returning true if loaded successfully and false otherwise 
