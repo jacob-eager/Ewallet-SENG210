@@ -23,9 +23,25 @@ public class ExpenseCalculator implements Expenser {
 
     public void PrintExpensereport() {
 
+        System.out.println("Expense report:");
+
+        ArrayList<Expense> expenses = userAtHand.getSpending();
+
+        for (int i = 0; i < expenses.size(); i++) {
+            System.out.println("$" + expenses.get(i).amount + " from " + expenses.get(i).source + " with a frequency of " + expenses.get(i).yearlyfrequency + " times a year.");
+        }
+
     }
 
     public void PrintIncomereport() {
+
+        System.out.println("Income report:");
+
+        ArrayList<Wage> income = userAtHand.getIncome();
+
+        for (int i = 0; i < income.size(); i++) {
+            System.out.println("$" + income.get(i).amount + " from " + income.get(i).source + " in the month of " + income.get(i).Month);
+        }
 
     }
 

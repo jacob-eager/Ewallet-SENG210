@@ -12,4 +12,12 @@ public class User {
 	double monthlysavings;	
 	//should add constructor(s)
 	User(String username,String password){}
+
+	public ArrayList<Wage> getIncome() {
+		return Income;
+	}
+
+	public ArrayList<Expense> getSpending() {
+		return Spending;
+	}
 }
