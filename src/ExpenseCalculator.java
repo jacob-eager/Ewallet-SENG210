@@ -10,11 +10,11 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void addExpense(Expense Ex) {
-
+    	userAtHand.Spending.add(Ex);
     }
 
     public void addMonthlyIncome(Wage W) {
-
+    	userAtHand.Income.add(W);
     }
 
     public void PrintFullreport() {
