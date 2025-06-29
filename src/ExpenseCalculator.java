@@ -10,11 +10,11 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void addExpense(Expense Ex) {
-    	userAtHand.Spending.add(Ex);
+    	userAtHand.getSpending().add(Ex);
     }
 
     public void addMonthlyIncome(Wage W) {
-    	userAtHand.Income.add(W);
+    	userAtHand.getIncome().add(W);
     }
 
     public void PrintFullreport() {
@@ -53,14 +53,14 @@ public class ExpenseCalculator implements Expenser {
         double total = 0;
         System.out.println("Type: " + type);
         
-        for (int i = 0; i < userAtHand.Income.size(); i++) {
-            if (userAtHand.Income.get(i).source.equalsIgnoreCase(type)) {
-                System.out.println("Amount: $" + userAtHand.Income.get(i).amount + " in " + userAtHand.Income.get(i).Month);
-                total += userAtHand.Income.get(i).amount;
+        for (int i = 0; i < userAtHand.getIncome().size(); i++) {
+            if (userAtHand.getIncome().get(i).source.equalsIgnoreCase(type)) {
+                System.out.println("Amount: $" + userAtHand.getIncome().get(i).amount + " in " + userAtHand.getIncome().get(i).Month);
+                total += userAtHand.getIncome().get(i).amount;
             }
         }
 
-        System.out.println("Total income for " + type + ": $" + total + " over " + userAtHand.Income.size() + " months");
+        System.out.println("Total income for " + type + ": $" + total + " over " + userAtHand.getIncome().size() + " months");
     }
 
     public void PrintExpensebyType() {
@@ -71,13 +71,13 @@ public class ExpenseCalculator implements Expenser {
         double total = 0;
         System.out.println("Type: " + type);
         
-        for (int i = 0; i < userAtHand.Spending.size(); i++) {
-            if (userAtHand.Spending.get(i).source.equalsIgnoreCase(type)) {
+        for (int i = 0; i < userAtHand.getSpending().size(); i++) {
+            if (userAtHand.getSpending().get(i).source.equalsIgnoreCase(type)) {
                 String freq = "";
-                if (userAtHand.Spending.get(i).yearlyfrequency == 1) {freq = "1 time a year";}
-                else {freq = userAtHand.Spending.get(i).yearlyfrequency + " times a year";}
-                System.out.println("Amount: $" + userAtHand.Spending.get(i).amount + ", " + freq);
-                total += userAtHand.Spending.get(i).amount * userAtHand.Spending.get(i).yearlyfrequency / 12.0;
+                if (userAtHand.getSpending().get(i).yearlyfrequency == 1) {freq = "1 time a year";}
+                else {freq = userAtHand.getSpending().get(i).yearlyfrequency + " times a year";}
+                System.out.println("Amount: $" + userAtHand.getSpending().get(i).amount + ", " + freq);
+                total += userAtHand.getSpending().get(i).amount * userAtHand.getSpending().get(i).yearlyfrequency / 12.0;
             }
         }
 
@@ -105,11 +105,11 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public boolean loadExpenseFile(String filePath) {
-        return False; //Placeholder return statement
+        return false; //Placeholder return statement
     }
 
     public boolean loadIncomeFile(String filePath) {
-        return False; //Placeholder return statement
+        return false; //Placeholder return statement
     }
 
     public int whenCanIBuy(String itemname, double price) {
