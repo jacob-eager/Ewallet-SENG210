@@ -85,8 +85,52 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void exportReport(String reportTitle) {
-      
+
+        try {
+            File report = new File(reportTitle + ".json");
+            if (report.createNewFile()) {
+                System.out.println(report.getName() + " created.");
+            }
+            else {
+                System.out.println("File already exists");
+            }
         
+            FileWriter reportWriter = new FileWriter(reportTitle + ".json");
+      
+            switch (reportTitle.toLowerCase()) {
+
+                case "expense":
+
+                    ArrayList<Expense> expenses = userAtHand.getSpending();
+
+                    for (int i = 0; i < expenses.size(); i++) {
+                        reportWriter.write("$" + expenses.get(i).amount + " from " + expenses.get(i).source + " with a frequency of " + expenses.get(i).yearlyfrequency + " times a year.");
+                    }
+
+                    break;
+                
+                case "income":
+
+                    ArrayList<Wage> income = userAtHand.getIncome();
+
+                    for (int i = 0; i < income.size(); i++) {
+                        reportWriter.write("$" + income.get(i).amount + " from " + income.get(i).source + " in the month of " + income.get(i).Month);
+                    }
+
+                    break;
+
+            }
+
+            reportWriter.close();
+
+            System.out.println("Report successfully exported.");
+
+        }
+
+        catch (IOException e) {
+            System.out.println("Unexpected error occcured exporting file");
+            e.getStackTrace();
+        }
 
     }
 
