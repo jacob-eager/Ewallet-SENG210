@@ -10,15 +10,49 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void addExpense(Expense Ex) {
-    	userAtHand.getSpending().add(Ex);
+    	userAtHand.addSpending(Ex);
     }
 
     public void addMonthlyIncome(Wage W) {
-    	userAtHand.getIncome().add(W);
+    	userAtHand.addIncome(W);
     }
 
     public void PrintFullreport() {
-
+    	System.out.println("<<Full Report>>");
+    	float totalExpense = 0;
+    	float totalIncome = 0; 
+    	for (Expense s : userAtHand.getSpending()) {
+    		totalExpense += s.amount * s.yearlyfrequency / 12.0; // Convert yearly frequency to monthly
+    	}
+    	for (Wage w : userAtHand.getIncome()) {
+    		totalIncome += w.amount;
+    	}
+    	
+    	PrintExpensereport();
+    	System.out.println("Total expenses: $" + totalExpense);
+    	
+    	PrintIncomereport();
+    	for (String m : new String[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}) {
+    		float monthlyIncome = 0;
+			for (Wage w : userAtHand.getIncome()) {
+				if (w.Month.equals(m)) {
+					monthlyIncome += w.amount;
+				}
+			}
+			
+			if (monthlyIncome != 0) { //only print if there is income(s) for the month
+				System.out.println("Total income for " + m + ": $" + monthlyIncome);
+			}
+    	}
+    	
+    	System.out.println("Total yearly income: $" + totalIncome);
+    	
+    	float savings = (totalIncome - totalExpense);
+    	if (savings >= 0) {
+    		System.out.println("Total savings: $" + savings);
+    	} else {
+    		System.out.println("Total new debt: $" + savings);
+    	}
     }
 
     public void PrintExpensereport() {
