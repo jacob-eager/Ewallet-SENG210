@@ -85,16 +85,18 @@ public class ExpenseCalculator implements Expenser {
         String type = scanner.nextLine();
 
         double total = 0;
+	int count = 0;
         System.out.println("Type: " + type);
         
         for (int i = 0; i < userAtHand.getIncome().size(); i++) {
             if (userAtHand.getIncome().get(i).source.equalsIgnoreCase(type)) {
                 System.out.println("Amount: $" + userAtHand.getIncome().get(i).amount + " in " + userAtHand.getIncome().get(i).Month);
                 total += userAtHand.getIncome().get(i).amount;
+		count++;
             }
         }
 
-        System.out.println("Total income for " + type + ": $" + total + " over " + userAtHand.getIncome().size() + " months");
+        System.out.println("Total income for " + type + ": $" + total + " over " + count + " months");
     }
 
     public void PrintExpensebyType() {
