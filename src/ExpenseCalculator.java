@@ -105,11 +105,43 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public boolean loadExpenseFile(String filePath) {
-        return false; //Placeholder return statement
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+    
+                String source = parts[0];
+                double amount = Double.parseDouble(parts[1]);
+                int yearlyfrequency = Integer.parseInt(parts[2]);
+    
+                Expense expense = new Expense(source, amount, yearlyfrequency);
+                userAtHand.getSpending().add(expense);
+            }
+            return true;
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error loading expenses: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean loadIncomeFile(String filePath) {
-        return false; //Placeholder return statement
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] parts = line.split(",");
+
+            String source = parts[0];
+            double amount = Double.parseDouble(parts[1]);
+            String Month = parts[2];
+
+            Wage wage = new Wage(source, amount, Month);
+            userAtHand.getIncome().add(wage);
+        }
+        return true;
+    } catch (IOException | NumberFormatException e) {
+        System.out.println("Error loading income: " + e.getMessage());
+        return false;
+    
     }
 
     public int whenCanIBuy(String itemname, double price) {
