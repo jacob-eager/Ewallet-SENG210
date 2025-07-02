@@ -229,7 +229,9 @@ public class ExpenseCalculator implements Expenser {
 
         double waitTime = price / userAtHand.monthlysavings;
 
-        return (int)Math.round(waitTime); //Placeholder return statement
+        System.out.println("You will be able to buy a(n) " + itemname + " in " + (int)Math.round(waitTime) + " month(s).");
+
+        return (int)Math.round(waitTime);
     }
 
     public void updateMonthlySavings() {

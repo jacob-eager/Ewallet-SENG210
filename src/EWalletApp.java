@@ -25,7 +25,17 @@ public class EWalletApp {
 		calculator.addExpense(new Expense("Rent", 50, 24));
 	    calculator.addMonthlyIncome(new Wage("Sold old car", 4000, "February"));
 	    System.out.println("Monthly Savings After: " + testUser.getMonthlySavings(calculator));
-	    
+		
+	    System.out.println("__Print income/expense report demo__");
+
+		calculator.PrintExpensereport();
+		calculator.PrintIncomereport();
+
+		System.out.println("__Export report and \"When Can I Buy Demo\"__");
+
+		calculator.exportReport("income");
+		System.out.println("Test Item: Nintendo Switch 2, $500");
+		calculator.whenCanIBuy("Nintendo Switch 2", 500);
 	    
 	}
 }
