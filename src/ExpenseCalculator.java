@@ -119,7 +119,53 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void exportReport(String reportTitle) {
+
+        try {
+            File report = new File(reportTitle + ".json");
+            if (report.createNewFile()) {
+                System.out.println(report.getName() + " created.");
+            }
+            else {
+                System.out.println("File already exists");
+            }
+        
+            FileWriter reportWriter = new FileWriter(reportTitle + ".json");
       
+            switch (reportTitle.toLowerCase()) {
+
+                case "expense":
+
+                    ArrayList<Expense> expenses = userAtHand.getSpending();
+
+                    for (int i = 0; i < expenses.size(); i++) {
+                        reportWriter.write("$" + expenses.get(i).amount + " from " + expenses.get(i).source + " with a frequency of " + expenses.get(i).yearlyfrequency + " times a year.");
+                    }
+
+                    break;
+                
+                case "income":
+
+                    ArrayList<Wage> income = userAtHand.getIncome();
+
+                    for (int i = 0; i < income.size(); i++) {
+                        reportWriter.write("$" + income.get(i).amount + " from " + income.get(i).source + " in the month of " + income.get(i).Month);
+                    }
+
+                    break;
+
+            }
+
+            reportWriter.close();
+
+            System.out.println("Report successfully exported.");
+
+        }
+
+        catch (IOException e) {
+            System.out.println("Unexpected error occcured exporting file");
+            e.getStackTrace();
+        }
+
     }
 
     public Currency convertForeignCurrency(Currency C, double amount, Boolean toUSD) {
@@ -160,26 +206,30 @@ public class ExpenseCalculator implements Expenser {
 
     public boolean loadIncomeFile(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] parts = line.split(",");
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
 
-            String source = parts[0];
-            double amount = Double.parseDouble(parts[1]);
-            String Month = parts[2];
+                String source = parts[0];
+                double amount = Double.parseDouble(parts[1]);
+                String Month = parts[2];
 
-            Wage wage = new Wage(source, amount, Month);
-            userAtHand.getIncome().add(wage);
-        }
-        return true;
-    } catch (IOException | NumberFormatException e) {
-        System.out.println("Error loading income: " + e.getMessage());
-        return false;
+                Wage wage = new Wage(source, amount, Month);
+                userAtHand.getIncome().add(wage);
+            }
+            return true;
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error loading income: " + e.getMessage());
+            return false;
     
+        }
     }
 
     public int whenCanIBuy(String itemname, double price) {
-        return -1; //Placeholder return statement
+
+        double waitTime = price / userAtHand.monthlysavings;
+
+        return (int)Math.round(waitTime); //Placeholder return statement
     }
 
     public void updateMonthlySavings() {
