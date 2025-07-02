@@ -20,6 +20,15 @@ public class User {
 		this.balance = 0.0;
 		this.monthlysavings = 0.0;
 	}
+	
+	void setMonthlySavings(double newSavings) {
+		this.monthlysavings = newSavings;
+	}
+	
+	double getMonthlySavings(ExpenseCalculator calculator) {
+		calculator.updateMonthlySavings();
+		return monthlysavings;
+	}
 
 	public ArrayList<Wage> getIncome() {
 		return Income;

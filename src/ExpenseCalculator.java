@@ -22,14 +22,14 @@ public class ExpenseCalculator implements Expenser {
     	float totalExpense = 0;
     	float totalIncome = 0; 
     	for (Expense s : userAtHand.getSpending()) {
-    		totalExpense += s.amount * s.yearlyfrequency / 12.0; // Convert yearly frequency to monthly
+    		totalExpense += s.amount * s.yearlyfrequency; // calculate total expense based on frequency
     	}
     	for (Wage w : userAtHand.getIncome()) {
     		totalIncome += w.amount;
     	}
     	
     	PrintExpensereport();
-    	System.out.println("Total expenses: $" + totalExpense);
+    	System.out.println("Total yearly expenses: $" + totalExpense);
     	
     	PrintIncomereport();
     	for (String m : new String[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}) {
@@ -47,11 +47,11 @@ public class ExpenseCalculator implements Expenser {
     	
     	System.out.println("Total yearly income: $" + totalIncome);
     	
-    	float savings = (totalIncome - totalExpense);
-    	if (savings >= 0) {
-    		System.out.println("Total savings: $" + savings);
+    	double totalSavings = (totalIncome - totalExpense);
+    	if (totalSavings >= 0) {
+    		System.out.println("Total savings: $" + totalSavings);
     	} else {
-    		System.out.println("Total new debt: $" + savings);
+    		System.out.println("Total new debt: $" + totalSavings);
     	}
     }
 
@@ -151,6 +151,20 @@ public class ExpenseCalculator implements Expenser {
     }
 
     public void updateMonthlySavings() {
-
+    	float monthlyExpense = 0;
+    	float monthlyIncome = 0; 
+    	for (Expense s : userAtHand.getSpending()) {
+    		if (s.yearlyfrequency >= 12) { // only consider monthly or biweekly expenses
+    			monthlyExpense += s.amount * (s.yearlyfrequency / 12); // calculate total expense based on frequency
+    		}
+    	}
+    	String curMonth = userAtHand.getIncome().get(userAtHand.getIncome().size() - 1).Month;
+    	for (Wage w : userAtHand.getIncome()) {
+    		if (w.Month.equals(curMonth)) {
+    			monthlyIncome += w.amount;
+    		}
+    	}
+    	
+    	userAtHand.setMonthlySavings(monthlyIncome - monthlyExpense);
     }
 }
