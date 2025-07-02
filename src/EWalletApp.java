@@ -38,4 +38,25 @@ public class EWalletApp {
 		calculator.whenCanIBuy("Nintendo Switch 2", 500);
 	    
 	}
+	static void featureDemoJA() {
+		User testUser = new User("testUser", "password123");
+		ExpenseCalculator calculator = new ExpenseCalculator(testUser);
+		
+		System.out.println("__Load expense file and load income file demo__");
+		
+		calculator.loadExpenseFile("expenses.csv");
+		calculator.loadIncomeFile("incomes.csv");
+		
+		System.out.println("__Print expense and income by type demo__");
+		
+		calculator.PrintExpensebyType();
+		calculator.PrintIncomereportbyType();
+		
+		System.out.println("__Convert foreign currency demo__");
+		
+		Currency yuan = new Currency();
+		yuan.rate = 0.14;
+		yuan.name = "CNY";
+		calculator.convertForeignCurrency(yuan, 10000, false);
+	}
 }
