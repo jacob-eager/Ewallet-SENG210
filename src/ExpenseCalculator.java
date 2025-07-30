@@ -17,26 +17,26 @@ public class ExpenseCalculator implements Expenser {
 		userAtHand.addIncome(W);
 	}
 
-	public void PrintFullreport() {
+	public void printFullReport() {
 		System.out.println("<<Full Report>>");
 		float totalExpense = 0;
 		float totalIncome = 0;
 		for (Expense s : userAtHand.getSpending()) {
-			totalExpense += s.amount * s.yearlyfrequency; // calculate total expense based on frequency
+			totalExpense += s.amount * s.yearlyFrequency; // calculate total expense based on frequency
 		}
 		for (Wage w : userAtHand.getIncome()) {
 			totalIncome += w.amount;
 		}
 
-		PrintExpensereport();
+		printExpenseReport();
 		System.out.println("Total yearly expenses: $" + totalExpense);
 
-		PrintIncomereport();
+		printIncomeReport();
 		for (String m : new String[] { "January", "February", "March", "April", "May", "June", "July", "August",
 				"September", "October", "November", "December" }) {
 			float monthlyIncome = 0;
 			for (Wage w : userAtHand.getIncome()) {
-				if (w.Month.equals(m)) {
+				if (w.month.equals(m)) {
 					monthlyIncome += w.amount;
 				}
 			}
@@ -56,7 +56,7 @@ public class ExpenseCalculator implements Expenser {
 		}
 	}
 
-	public void PrintExpensereport() {
+	public void printExpenseReport() {
 
 		System.out.println("Expense report:");
 
@@ -64,12 +64,12 @@ public class ExpenseCalculator implements Expenser {
 
 		for (int i = 0; i < expenses.size(); i++) {
 			System.out.println("$" + expenses.get(i).amount + " from " + expenses.get(i).source
-					+ " with a frequency of " + expenses.get(i).yearlyfrequency + " times a year.");
+					+ " with a frequency of " + expenses.get(i).yearlyFrequency + " times a year.");
 		}
 
 	}
 
-	public void PrintIncomereport() {
+	public void printIncomeReport() {
 
 		System.out.println("Income report:");
 
@@ -77,12 +77,12 @@ public class ExpenseCalculator implements Expenser {
 
 		for (int i = 0; i < income.size(); i++) {
 			System.out.println("$" + income.get(i).amount + " from " + income.get(i).source + " in the month of "
-					+ income.get(i).Month);
+					+ income.get(i).month);
 		}
 
 	}
 
-	public void PrintIncomereportbyType() {
+	public void printIncomeReportByType() {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter income type: ");
 		String type = scanner.nextLine();
@@ -94,16 +94,17 @@ public class ExpenseCalculator implements Expenser {
 		for (int i = 0; i < userAtHand.getIncome().size(); i++) {
 			if (userAtHand.getIncome().get(i).source.equalsIgnoreCase(type)) {
 				System.out.println("Amount: $" + userAtHand.getIncome().get(i).amount + " in "
-						+ userAtHand.getIncome().get(i).Month);
+						+ userAtHand.getIncome().get(i).month);
 				total += userAtHand.getIncome().get(i).amount;
 				count++;
 			}
 		}
 
 		System.out.println("Total income for " + type + ": $" + total + " over " + count + " months");
+		scanner.close();
 	}
 
-	public void PrintExpensebyType() {
+	public void printExpenseByType() {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Enter expense type: ");
 		String type = scanner.nextLine();
@@ -114,18 +115,19 @@ public class ExpenseCalculator implements Expenser {
 		for (int i = 0; i < userAtHand.getSpending().size(); i++) {
 			if (userAtHand.getSpending().get(i).source.equalsIgnoreCase(type)) {
 				String freq = "";
-				if (userAtHand.getSpending().get(i).yearlyfrequency == 1) {
+				if (userAtHand.getSpending().get(i).yearlyFrequency == 1) {
 					freq = "1 time a year";
 				} else {
-					freq = userAtHand.getSpending().get(i).yearlyfrequency + " times a year";
+					freq = userAtHand.getSpending().get(i).yearlyFrequency + " times a year";
 				}
 				System.out.println("Amount: $" + userAtHand.getSpending().get(i).amount + ", " + freq);
-				total += userAtHand.getSpending().get(i).amount * userAtHand.getSpending().get(i).yearlyfrequency
+				total += userAtHand.getSpending().get(i).amount * userAtHand.getSpending().get(i).yearlyFrequency
 						/ 12.0;
 			}
 		}
 
 		System.out.println("Total cost for " + type + ": $" + total + " every month");
+		scanner.close();
 	}
 
 	public void exportReport(String reportTitle) {
@@ -148,7 +150,7 @@ public class ExpenseCalculator implements Expenser {
 
 				for (int i = 0; i < expenses.size(); i++) {
 					reportWriter.write("$" + expenses.get(i).amount + " from " + expenses.get(i).source
-							+ " with a frequency of " + expenses.get(i).yearlyfrequency + " times a year.");
+							+ " with a frequency of " + expenses.get(i).yearlyFrequency + " times a year.");
 				}
 
 				break;
@@ -159,7 +161,7 @@ public class ExpenseCalculator implements Expenser {
 
 				for (int i = 0; i < income.size(); i++) {
 					reportWriter.write("$" + income.get(i).amount + " from " + income.get(i).source
-							+ " in the month of " + income.get(i).Month);
+							+ " in the month of " + income.get(i).month);
 				}
 
 				break;
@@ -236,12 +238,12 @@ public class ExpenseCalculator implements Expenser {
 		}
 	}
 
-	public int whenCanIBuy(String itemname, double price) {
+	public int whenCanIBuy(String itemName, double price) {
 
-		double waitTime = price / userAtHand.monthlysavings;
+		double waitTime = price / userAtHand.monthlySavings;
 
 		System.out.println(
-				"You will be able to buy a(n) " + itemname + " in " + (int) Math.round(waitTime) + " month(s).");
+				"You will be able to buy a(n) " + itemName + " in " + (int) Math.round(waitTime) + " month(s).");
 
 		return (int) Math.round(waitTime);
 	}
@@ -250,13 +252,13 @@ public class ExpenseCalculator implements Expenser {
 		float monthlyExpense = 0;
 		float monthlyIncome = 0;
 		for (Expense s : userAtHand.getSpending()) {
-			if (s.yearlyfrequency >= 12) { // only consider monthly or biweekly expenses
-				monthlyExpense += s.amount * (s.yearlyfrequency / 12); // calculate total expense based on frequency
+			if (s.yearlyFrequency >= 12) { // only consider monthly or biweekly expenses
+				monthlyExpense += s.amount * (s.yearlyFrequency / 12); // calculate total expense based on frequency
 			}
 		}
-		String curMonth = userAtHand.getIncome().get(userAtHand.getIncome().size() - 1).Month;
+		String curMonth = userAtHand.getIncome().get(userAtHand.getIncome().size() - 1).month;
 		for (Wage w : userAtHand.getIncome()) {
-			if (w.Month.equals(curMonth)) {
+			if (w.month.equals(curMonth)) {
 				monthlyIncome += w.amount;
 			}
 		}

@@ -4,9 +4,9 @@ public class EWalletApp {
 	// this is the app class, has the GUI and create one object of your expense
 	// calculator class. The expense calculator class is the implementation of the
 	// Expenser interface
-	private ArrayList<User> AllData;
+	private ArrayList<User> allData;
 
-	public void CreateUser(String username, String password) {
+	public void createUser(String username, String password) {
 	}
 
 	public static void main(String[] args) {
@@ -21,7 +21,7 @@ public class EWalletApp {
 
 		calculator.addExpense(new Expense("Groceries", 500, 12));
 		calculator.addMonthlyIncome(new Wage("Salary", 3000, "January"));
-		calculator.PrintFullreport();
+		calculator.printFullReport();
 
 		System.out.println("__Update montly savings demo__");
 
@@ -32,8 +32,8 @@ public class EWalletApp {
 
 		System.out.println("__Print income/expense report demo__");
 
-		calculator.PrintExpensereport();
-		calculator.PrintIncomereport();
+		calculator.printExpenseReport();
+		calculator.printIncomeReport();
 
 		System.out.println("__Export report and \"When Can I Buy Demo\"__");
 
@@ -54,8 +54,8 @@ public class EWalletApp {
 
 		System.out.println("__Print expense and income by type demo__");
 
-		calculator.PrintExpensebyType();
-		calculator.PrintIncomereportbyType();
+		calculator.printExpenseByType();
+		calculator.printIncomeReportByType();
 
 		System.out.println("__Convert foreign currency demo__");
 

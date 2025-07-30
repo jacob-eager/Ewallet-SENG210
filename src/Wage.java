@@ -1,12 +1,12 @@
+
 public class Wage {
 	String source;
 	double amount;
-	String Month;
+	String month;
 
-	// should add contructor(s)
 	Wage(String source, double amount, String Month) {
 		this.source = source;
 		this.amount = amount;
-		this.Month = Month;
+		this.month = Month;
 	}
 }
