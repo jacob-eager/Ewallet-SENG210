@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -24,6 +25,10 @@ public class ReportFrame extends JFrame implements ActionListener {
 	JComboBox<String> typeSelector;
 	JPanel reportPanel;
 	User currUser;
+	JComboBox<String> filterBy;
+	JComboBox<String> category;
+	JButton generateReport;
+	JFrame filterDialog;
 
 	public ReportFrame(User currUser) {
 		
@@ -31,7 +36,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		
 		ec = new ExpenseCalculator(currUser);
 		
-		this.setTitle("View Report");;
+		this.setTitle("View Reports");;
 		this.setSize(700, 500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -46,12 +51,10 @@ public class ReportFrame extends JFrame implements ActionListener {
 		this.add(centerLock);
 		
 		
-		
-		
 		reportPanel = new JPanel();
 		reportPanel.setPreferredSize(new Dimension(500,300));
 		reportPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		reportPanel.add(getIncomeTable());
+		reportPanel.add(getFullReportTable());
 		centerLock.add(reportPanel, constraints);
 		
 		String[] reportTypes = {
@@ -74,7 +77,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		JButton exportButton = new JButton("Export");
 		exportButton.addActionListener(event -> ec.exportReport(getTitle()));
 		JButton filterButton = new JButton("Filter");
-		filterButton.addActionListener(event -> ec.printExpenseByType());
+		filterButton.addActionListener(event -> filterReport());
 		JButton closeButton = new JButton("Close");
 		closeButton.addActionListener(event -> this.dispose());
 		
@@ -101,6 +104,8 @@ public class ReportFrame extends JFrame implements ActionListener {
 				++decimalPlaces;
 			}
 		}
+		
+		s = "$" + s;
 		
 		switch (decimalPlaces) {
 		
@@ -140,10 +145,155 @@ public class ReportFrame extends JFrame implements ActionListener {
 				this.revalidate();
 			}
 		}
+		if (e.getSource() == filterBy) {
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(getInitialFilters());
+			category.setModel(model);
+			this.repaint();
+			this.revalidate();
+		}
+		if (e.getSource() == generateReport) {
+			
+			reportPanel.removeAll();
+			
+			String[] incomeTableColumnNames = {
+					"Source",
+					"Amount",
+					"Month"
+			};
+			
+			String[] expenseTableColumnNames = {
+					"Source",
+					"Amount",
+					"Frequency"
+			};
+			
+			switch (filterBy.getSelectedItem().toString()) {
+			
+			case "Expense Source":
+				
+				ArrayList<String[]> expenseTableDataArrayList = new ArrayList<String[]>();
+				
+				for (Expense expense : currUser.getSpending()) {
+					
+					if (expense.source.equals(category.getSelectedItem().toString())) {
+						String[] row = new String[3];
+						row[0] = expense.source;
+						row[1] = formatMoney(expense.amount);
+						row[2] = Expense.yearlyFrequencyKey.getOrDefault(expense.yearlyFrequency, 
+								Integer.toString(expense.yearlyFrequency) + " times / year");
+	
+						expenseTableDataArrayList.add(row);
+					}
+				}
+				
+				String[][] expenseTableData = expenseTableDataArrayList.toArray(new String[0][0]);
+				
+				JTable expenseTable = new JTable(new ReportTableModel(expenseTableData, expenseTableColumnNames));
+				
+				JScrollPane tablePane = new JScrollPane(expenseTable);
+				
+				tablePane.setPreferredSize(new Dimension(400, 200));
+				
+				reportPanel.add(tablePane);
+				this.repaint();
+				this.revalidate();
+				break;
+				
+			case "Expense Frequency":
+				
+				expenseTableDataArrayList = new ArrayList<String[]>();
+				
+				for (Expense expense : currUser.getSpending()) {
+					
+					if (Expense.yearlyFrequencyKey.getOrDefault(expense.yearlyFrequency,
+							Integer.toString(expense.yearlyFrequency) + " times / year").
+							equals(category.getSelectedItem().toString())) {
+						String[] row = new String[3];
+						row[0] = expense.source;
+						row[1] = formatMoney(expense.amount);
+						row[2] = Expense.yearlyFrequencyKey.getOrDefault(expense.yearlyFrequency, 
+								Integer.toString(expense.yearlyFrequency) + " times / year");
+	
+						expenseTableDataArrayList.add(row);
+					}
+				}
+				
+				expenseTableData = expenseTableDataArrayList.toArray(new String[0][0]);
+				
+				expenseTable = new JTable(new ReportTableModel(expenseTableData, expenseTableColumnNames));
+				
+				tablePane = new JScrollPane(expenseTable);
+				
+				tablePane.setPreferredSize(new Dimension(400, 200));
+				
+				reportPanel.add(tablePane);
+				this.repaint();
+				this.revalidate();
+				break;
+				
+			case "Income Source":
+				
+				ArrayList<String[]> incomeTableDataArrayList = new ArrayList<String[]>();
+				
+				// Reads data from the current user's income and adds to array
+				for (Wage incomeSource : currUser.getIncome()) {
+					if (incomeSource.source.equals(category.getSelectedItem())) {
+						String[] row = new String[3];
+						row[0] = incomeSource.source;
+						row[1] = formatMoney(incomeSource.amount);
+						row[2] = incomeSource.month;
+						incomeTableDataArrayList.add(row);
+					}
+				}
+				
+				// Converts to array for table model
+				String[][] incomeTableData = incomeTableDataArrayList.toArray(new String[0][0]);
+				
+				JTable incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
+				tablePane = new JScrollPane(incomeTable);
+				tablePane.setBackground(Color.BLUE);
+				tablePane.setPreferredSize(new Dimension(400, 200));
+				
+				reportPanel.add(tablePane);
+				this.repaint();
+				this.revalidate();
+				break;
+				
+			case "Income Month":
+				
+				incomeTableDataArrayList = new ArrayList<String[]>();
+				
+				// Reads data from the current user's income and adds to array
+				for (Wage incomeSource : currUser.getIncome()) {
+					if (incomeSource.source.equals(category.getSelectedItem())) {
+						String[] row = new String[3];
+						row[0] = incomeSource.source;
+						row[1] = formatMoney(incomeSource.amount);
+						row[2] = incomeSource.month;
+						incomeTableDataArrayList.add(row);
+					}
+				}
+				
+				// Converts to array for table model
+				incomeTableData = incomeTableDataArrayList.toArray(new String[0][0]);
+				
+				incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
+				tablePane = new JScrollPane(incomeTable);
+				tablePane.setBackground(Color.BLUE);
+				tablePane.setPreferredSize(new Dimension(400, 200));
+				
+				reportPanel.add(tablePane);
+				this.repaint();
+				this.revalidate();
+				break;
+			}
+			filterDialog.dispose();
+		}
 		
 	}
 	
 	private JScrollPane getExpenseTable() {
+		
 		String[] expenseTableColumnNames = {
 				"Source",
 				"Amount",
@@ -156,30 +306,10 @@ public class ReportFrame extends JFrame implements ActionListener {
 		for (Expense expense : currUser.getSpending()) {
 			String[] row = new String[3];
 			row[0] = expense.source;
-			row[1] = "$" + Double.toString(expense.amount);
+			row[1] = formatMoney(expense.amount);
+			row[2] = Expense.yearlyFrequencyKey.getOrDefault(expense.yearlyFrequency, 
+					Integer.toString(expense.yearlyFrequency) + " times / year");
 
-			switch (expense.yearlyFrequency) {
-			
-			case 1:
-				row[2] = "Yearly";
-				break;
-				
-			case 12:
-				row[2] = "Monthly";
-				break;
-				
-			case 24:
-				row[2] = "Biweekly";
-				break;
-				
-			case 52:
-				row[2] = "Weekly";
-				break;
-				
-			default:
-				row[2] = Integer.toString(expense.yearlyFrequency) + " times / year";
-				break;
-			}
 			expenseTableDataArrayList.add(row);
 		}
 		
@@ -189,7 +319,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		
 		JScrollPane tablePane = new JScrollPane(expenseTable);
 		
-		tablePane.setPreferredSize(new Dimension(300, 100));
+		tablePane.setPreferredSize(new Dimension(400, 200));
 				
 		return tablePane;
 	}
@@ -208,7 +338,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		for (Wage incomeSource : currUser.getIncome()) {
 			String[] row = new String[3];
 			row[0] = incomeSource.source;
-			row[1] = "$" + formatMoney(incomeSource.amount);
+			row[1] = formatMoney(incomeSource.amount);
 			row[2] = incomeSource.month;
 			incomeTableDataArrayList.add(row);
 		}
@@ -260,5 +390,92 @@ public class ReportFrame extends JFrame implements ActionListener {
 	
 	private void filterReport() {
 		
+		filterDialog = new JFrame("Filter");
+		filterDialog.setSize(400,200);
+		filterDialog.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		filterBy = null;
+		category = null; 
+		
+		switch (typeSelector.getSelectedItem().toString()) {
+		
+		case "Full Report":
+			String[] allCategories = {"Expense Source", "Expense Frequency", "Income Source", "Income Month"};
+			filterBy = new JComboBox<String>(allCategories);
+			filterBy.addActionListener(this);
+			filterDialog.add(filterBy);
+			category = new JComboBox<String>(getInitialFilters());
+			filterDialog.add(category);
+			break;
+			
+		case "Income Report":
+			String[] incomeCategories = {"Income Source", "Income Month"};
+			filterBy = new JComboBox<String>(incomeCategories);
+			filterBy.addActionListener(this);
+			filterDialog.add(filterBy);
+			category = new JComboBox<String>(getInitialFilters());
+			filterDialog.add(category);
+			break;
+			
+		case "Expense Report":
+			String[] expenseCategories = {"Expense Source", "Expense Frequency"};
+			filterBy = new JComboBox<String>(expenseCategories);
+			filterBy.addActionListener(this);
+			filterDialog.add(filterBy);
+			category = new JComboBox<String>(getInitialFilters());
+			filterDialog.add(category);
+			break;
+
+		}
+		
+		generateReport = new JButton("Generate");
+		generateReport.addActionListener(this);
+		
+		filterDialog.add(generateReport);
+		filterDialog.setVisible(true);
+	}
+	
+	private String[] getInitialFilters() {
+		
+		ArrayList<String> filters = new ArrayList<String>();
+		
+		switch (filterBy.getSelectedItem().toString()) {
+		
+		case "Expense Source":
+			for (Expense e : currUser.getSpending()) {
+				if (!filters.contains(e.source)) {
+					filters.add(e.source);
+				}
+			}
+			break;
+			
+		case "Expense Frequency":
+			for (Expense e : currUser.getSpending()) {
+				if (!filters.contains(Integer.toString(e.yearlyFrequency))) {
+					filters.add(Expense.yearlyFrequencyKey.getOrDefault(e.yearlyFrequency, 
+							Integer.toString(e.yearlyFrequency) + " times / year")); 
+				}
+			}
+			break;
+			
+		case "Income Source":
+			for (Wage w : currUser.getIncome()) {
+				if (!filters.contains(w.source)) {
+					filters.add(w.source); 
+				}
+			}
+			break;
+			
+		case "Income Month":
+			for (Wage w : currUser.getIncome()) {
+				if (!filters.contains(w.month)) {
+					filters.add(w.month); 
+				}
+			}
+			break;
+		}
+		return filters.toArray(new String[0]);
 	}
 }
+
+

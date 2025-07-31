@@ -98,6 +98,7 @@ public class EWalletApp {
 		testUser.addSpending(new Expense("Shopping", 40.00, 1));
 		testUser.addSpending(new Expense("Subscription", 12.00, 12));
 		testUser.addSpending(new Expense("Groceries", 100.00, 24));
+		testUser.addSpending(new Expense("Doordash", 50.398, 6));
 		
 		return testUser;
 	}
