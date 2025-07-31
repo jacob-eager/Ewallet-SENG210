@@ -23,119 +23,19 @@ public class EWalletApp {
 
 	public static void main(String[] args) {
 		showReportGUI();
-		// featureDemoDD();
 	}
 	
 	public static void showReportGUI() {
-		
-		
-		JFrame reportFrame = new JFrame("Generate Report");
-		reportFrame.setSize(700, 500);
-		reportFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		reportFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
-		
-		// Panel to keep things centered
-		JPanel centerLock = new JPanel();
-		centerLock.setLayout(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		reportFrame.add(centerLock);
-		
 		
 		// REMOVE LATER: Debug test user
 		allData = new ArrayList<User>();
 		allData.add(createTestUser());
 		currUserIndex = 0;
 		
-		
-		String[] incomeTableColumnNames = {
-				"Source",
-				"Amount",
-				"Month"
-		};
-		
-		ArrayList<String[]> incomeTableDataArrayList = new ArrayList<String[]>();
-		
-		// Reads data from the current user's income and adds to array
-		for (Wage incomeSource : allData.get(currUserIndex).getIncome()) {
-			String[] row = new String[3];
-			row[0] = incomeSource.source;
-			row[1] = "$" + formatMoney(incomeSource.amount);
-			row[2] = incomeSource.month;
-			incomeTableDataArrayList.add(row);
-		}
-		
-		// Converts to array for table model
-		String[][] incomeTableData = incomeTableDataArrayList.toArray(new String[0][0]);
-		
-		JTable incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
-		JScrollPane tablePane = new JScrollPane(incomeTable);
-		
-		
-		JPanel reportPanel = new JPanel();
-		reportPanel.setPreferredSize(new Dimension(500,500));
-		reportPanel.add(tablePane);
-		centerLock.add(reportPanel, constraints);
-		
-		String[] reportTypes = {
-				"Full Report", "Income Report", "Expense Report"
-		};
-		JComboBox<String> typeSelector = new JComboBox<String>(reportTypes);
-		typeSelector.setPreferredSize(new Dimension(400,25));
-		constraints.gridy = 1;
-		centerLock.add(typeSelector, constraints);
-		
-		
-		JPanel buttonsPanel = new JPanel();
-		constraints.gridy = 2;
-		centerLock.add(buttonsPanel, constraints);
-		
-		JButton importButton = new JButton("Import");
-		JButton export = new JButton("Export");
-		JButton filter = new JButton("Filter");
-		JButton close = new JButton("Close");
-		close.addActionListener(event -> reportFrame.dispose());
-		
-		buttonsPanel.add(importButton);
-		buttonsPanel.add(export);
-		buttonsPanel.add(filter);
-		buttonsPanel.add(close);
-		
-		
-		reportFrame.setVisible(true);
+		new ReportFrame(allData.get(currUserIndex));
 	}
-
-	private static String formatMoney(double amount) {
-
-		String s = Double.toString(amount);
-		boolean afterDecimal = false;
-		int decimalPlaces = 0;
-		
-		for (char c : s.toCharArray()) {
-			if (c == '.') {
-				afterDecimal = true;
-				continue;
-			}
-			if (afterDecimal) {
-				++decimalPlaces;
-			}
-		}
-		
-		switch (decimalPlaces) {
-		
-		case 1:
-			return s + "0";
-			
-		case 2:
-			return s;
-			
-		// > 2 decimal places
-		default:
-			return s.substring(0, s.length() - (decimalPlaces - 2));  // Gets rid of excess decimal places (FIXME: Doesn't round, just cuts off)
-		
-		}
-	}
+	
+	
 	static void featureDemoDD() {
 		User testUser = new User("testUser", "password123");
 		ExpenseCalculator calculator = new ExpenseCalculator(testUser);
