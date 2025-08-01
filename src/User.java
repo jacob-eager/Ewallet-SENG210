@@ -13,7 +13,7 @@ public class User {
 	// here you can assume yearly expenses that are recorded have already been paid.
 	double monthlySavings;
 
-	// should add constructor(s)
+	
 	User(String username, String password) {
 		this.username = username;
 		this.pwd = password;

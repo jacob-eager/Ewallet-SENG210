@@ -1,18 +1,41 @@
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class EWalletApp {
 	// this is the app class, has the GUI and create one object of your expense
 	// calculator class. The expense calculator class is the implementation of the
 	// Expenser interface
-	private ArrayList<User> allData;
+	private static ArrayList<User> allData;
+	private static int currUserIndex;
 
 	public void createUser(String username, String password) {
 	}
 
 	public static void main(String[] args) {
-		featureDemoDD();
+		showReportGUI();
 	}
-
+	
+	public static void showReportGUI() {
+		
+		// REMOVE LATER: Debug test user
+		allData = new ArrayList<User>();
+		allData.add(createTestUser());
+		currUserIndex = 0;
+		
+		new ReportFrame(allData.get(currUserIndex));
+	}
+	
+	
 	static void featureDemoDD() {
 		User testUser = new User("testUser", "password123");
 		ExpenseCalculator calculator = new ExpenseCalculator(testUser);
@@ -63,5 +86,20 @@ public class EWalletApp {
 		yuan.rate = 0.14;
 		yuan.name = "CNY";
 		calculator.convertForeignCurrency(yuan, 10000, false);
+	}
+	
+	private static User createTestUser() {
+		User testUser = new User("Test User", "Password1");
+		testUser.addIncome(new Wage("Walmart", 400.00, "May"));
+		testUser.addIncome(new Wage("Walmart", 700.51345465768, "June"));
+		testUser.addIncome(new Wage("Erbert and Gerbert's", 500.0, "May"));
+		testUser.addIncome(new Wage("Side hustle", 10.00, "May"));
+		testUser.addIncome(new Wage("Side hustle", 40.00, "June"));
+		testUser.addSpending(new Expense("Shopping", 40.00, 1));
+		testUser.addSpending(new Expense("Subscription", 12.00, 12));
+		testUser.addSpending(new Expense("Groceries", 100.00, 24));
+		testUser.addSpending(new Expense("Doordash", 50.398, 6));
+		
+		return testUser;
 	}
 }
