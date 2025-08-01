@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 @SuppressWarnings("serial")
@@ -539,20 +539,30 @@ public class ReportFrame extends JFrame implements ActionListener {
 				}
 				else {
 					JFrame externalReportFrame = new JFrame("External Report");
-					JTextArea textArea = new JTextArea();
-					String textContents = "";
+					JTextPane textArea = new JTextPane();
+					String textContents = "<table>";
 					
-					
+					if (incomeList.size() != 0) {
+						textContents += "<tr><th>Source</th><th>Amount</th><th>Month</th></tr>";
+					}
 					for (Wage w : incomeList) {
-						textContents += w.source + w.amount + w.month + "\n";
+						textContents += "<tr><td>" + w.source + "</td><td>" + w.amount + "</td><td>" + w.month + "</td></tr>\n";
 					}
 					
+					if (expenseList.size() != 0) {
+						textContents += "<tr><th>Source</th><th>Amount</th><th>Month</th></tr>";
+					}
 					for (Expense e : expenseList) {
-						textContents += e.source + e.amount + e.yearlyFrequency + "\n";
+						textContents += "<tr><td>" + e.source + "</td><td>" + e.amount + "</td><td>" + e.yearlyFrequency + "</td></tr>\n";
 					}
 					
+					textContents += "</table>";
+					
+					textArea.setContentType("text/html");
 					textArea.setText(textContents);
+					textArea.setEditable(false);
 					externalReportFrame.add(textArea);
+					externalReportFrame.setSize(300, 300);
 					externalReportFrame.setVisible(true);
 				}
 			}
