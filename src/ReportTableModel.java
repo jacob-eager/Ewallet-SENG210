@@ -3,7 +3,6 @@ import javax.swing.table.AbstractTableModel;
 @SuppressWarnings("serial")
 public class ReportTableModel extends AbstractTableModel {
 
-	
 	String[][] data;
 	
 	String[] columnNames;

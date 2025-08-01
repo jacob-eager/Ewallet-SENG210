@@ -6,29 +6,36 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 @SuppressWarnings("serial")
 public class ReportFrame extends JFrame implements ActionListener {
 	
 	ExpenseCalculator ec;
-	JComboBox<String> typeSelector;
 	JPanel reportPanel;
 	User currUser;
-	JComboBox<String> filterBy;
-	JComboBox<String> category;
-	JButton generateReport;
+	JComboBox<String> typeSelector, filterBy, category;
 	JFrame filterDialog;
+	JButton generateReport, importButton, exportButton;
 
 	public ReportFrame(User currUser) {
 		
@@ -72,10 +79,10 @@ public class ReportFrame extends JFrame implements ActionListener {
 		constraints.gridy = 2;
 		centerLock.add(buttonsPanel, constraints);
 		
-		JButton importButton = new JButton("Import");
-		importButton.addActionListener(event -> ec.loadIncomeFile(getName()));
-		JButton exportButton = new JButton("Export");
-		exportButton.addActionListener(event -> ec.exportReport(getTitle()));
+		importButton = new JButton("Import");
+		importButton.addActionListener(this);
+		exportButton = new JButton("Export");
+		exportButton.addActionListener(this);
 		JButton filterButton = new JButton("Filter");
 		filterButton.addActionListener(event -> filterReport());
 		JButton closeButton = new JButton("Close");
@@ -146,7 +153,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			}
 		}
 		if (e.getSource() == filterBy) {
-			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(getInitialFilters());
+			DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(getFilters());
 			category.setModel(model);
 			this.repaint();
 			this.revalidate();
@@ -265,7 +272,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 				
 				// Reads data from the current user's income and adds to array
 				for (Wage incomeSource : currUser.getIncome()) {
-					if (incomeSource.source.equals(category.getSelectedItem())) {
+					if (incomeSource.month.equals(category.getSelectedItem())) {
 						String[] row = new String[3];
 						row[0] = incomeSource.source;
 						row[1] = formatMoney(incomeSource.amount);
@@ -289,7 +296,12 @@ public class ReportFrame extends JFrame implements ActionListener {
 			}
 			filterDialog.dispose();
 		}
-		
+		if (e.getSource() == importButton) {
+			importReport();
+		}
+		if (e.getSource() == exportButton) {
+			ec.exportReport(typeSelector.getSelectedItem().toString());
+		}
 	}
 	
 	private JScrollPane getExpenseTable() {
@@ -404,7 +416,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			filterBy = new JComboBox<String>(allCategories);
 			filterBy.addActionListener(this);
 			filterDialog.add(filterBy);
-			category = new JComboBox<String>(getInitialFilters());
+			category = new JComboBox<String>(getFilters());
 			filterDialog.add(category);
 			break;
 			
@@ -413,7 +425,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			filterBy = new JComboBox<String>(incomeCategories);
 			filterBy.addActionListener(this);
 			filterDialog.add(filterBy);
-			category = new JComboBox<String>(getInitialFilters());
+			category = new JComboBox<String>(getFilters());
 			filterDialog.add(category);
 			break;
 			
@@ -422,7 +434,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			filterBy = new JComboBox<String>(expenseCategories);
 			filterBy.addActionListener(this);
 			filterDialog.add(filterBy);
-			category = new JComboBox<String>(getInitialFilters());
+			category = new JComboBox<String>(getFilters());
 			filterDialog.add(category);
 			break;
 
@@ -435,7 +447,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		filterDialog.setVisible(true);
 	}
 	
-	private String[] getInitialFilters() {
+	private String[] getFilters() {
 		
 		ArrayList<String> filters = new ArrayList<String>();
 		
@@ -476,6 +488,81 @@ public class ReportFrame extends JFrame implements ActionListener {
 		}
 		return filters.toArray(new String[0]);
 	}
+	
+	private void importReport() {
+		try {
+			JFileChooser fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Comma-separated value files (.csv)", "csv");
+			fileChooser.setFileFilter(filter);
+			int selection = fileChooser.showOpenDialog(null);
+			File selectedFile;
+			ArrayList<Wage> incomeList = new ArrayList<Wage>();
+			ArrayList<Expense> expenseList = new ArrayList<Expense>();
+
+			if (selection == JFileChooser.APPROVE_OPTION) {
+				selectedFile = fileChooser.getSelectedFile().getAbsoluteFile();
+
+				FileInputStream fileByteStream = new FileInputStream(selectedFile);
+				Scanner inFS = new Scanner(fileByteStream);
+
+				String labels = inFS.nextLine();
+
+				// Income report
+				if (labels.contains("month")) {
+					while (inFS.hasNextLine()) {
+						String[] line = Arrays.asList(inFS.nextLine().split(",")).toArray(new String[3]);
+						
+						// Stops reading if expense report is detected
+						if (line[0].equals("yearly_frequency") || line[1].equals("yearly_frequency")
+								|| line[2].equals("yearly_frequency")) {
+							labels = "category,amount,yearly_frequency\n";
+							break;
+							
+						}
+						incomeList.add(new Wage(line[0], Double.parseDouble(line[1]), line[2]));
+					}
+				}
+				// Expense report
+				if (labels.contains("yearly_frequency")) {
+					while (inFS.hasNextLine()) {
+						
+						String[] line = Arrays.asList(inFS.nextLine().split(",")).toArray(new String[3]);
+						expenseList.add(new Expense(line[0], Double.parseDouble(line[1]), Integer.parseInt(line[2])));
+						
+					}
+				}
+				
+				// Displays data if there is any
+				if (incomeList.size() == 0 && expenseList.size() == 0) {
+					JOptionPane.showMessageDialog(this, "File not readable! Please select a new file.", "Warning", 
+							JOptionPane.WARNING_MESSAGE,null);
+				}
+				else {
+					JFrame externalReportFrame = new JFrame("External Report");
+					JTextArea textArea = new JTextArea();
+					String textContents = "";
+					
+					
+					for (Wage w : incomeList) {
+						textContents += w.source + w.amount + w.month + "\n";
+					}
+					
+					for (Expense e : expenseList) {
+						textContents += e.source + e.amount + e.yearlyFrequency + "\n";
+					}
+					
+					textArea.setText(textContents);
+					externalReportFrame.add(textArea);
+					externalReportFrame.setVisible(true);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
 
 
