@@ -75,7 +75,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		
 		
 		JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setBackground(Color.RED);
+		// buttonsPanel.setBackground(Color.RED);
 		constraints.gridy = 2;
 		centerLock.add(buttonsPanel, constraints);
 		
