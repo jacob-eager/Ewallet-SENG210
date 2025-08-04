@@ -55,7 +55,7 @@ public class UserDAO implements DatabaseAccessObject<User> {
 
 	@Override
 	public void update(User updatedUser, String params) {
-		// TODO Auto-generated method stub
+		// IDK if we actually need to do this so I'll fill this in later
 		
 	}
 
