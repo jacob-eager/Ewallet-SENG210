@@ -565,9 +565,9 @@ public class ReportFrame extends JFrame implements ActionListener {
 					externalReportFrame.setSize(300, 300);
 					externalReportFrame.setVisible(true);
 				}
+				inFS.close();
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
