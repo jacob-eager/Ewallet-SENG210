@@ -4,6 +4,7 @@ public class User {
 	private ArrayList<Currency> currencyRates;
 	private ArrayList<Wage> income; // user income sources that user can record or view or search by type or month
 	private ArrayList<Expense> spending; // user's expenses
+	int id;
 	String username;
 	String pwd;
 	// current total income - total
@@ -13,8 +14,19 @@ public class User {
 	// here you can assume yearly expenses that are recorded have already been paid.
 	double monthlySavings;
 
-	// should add constructor(s)
+	
 	User(String username, String password) {
+		this.username = username;
+		this.pwd = password;
+		this.income = new ArrayList<Wage>();
+		this.spending = new ArrayList<Expense>();
+		this.currencyRates = new ArrayList<Currency>();
+		this.balance = 0.0;
+		this.monthlySavings = 0.0;
+	}
+	
+	public User(int id, String username, String password) {
+		this.id = id;
 		this.username = username;
 		this.pwd = password;
 		this.income = new ArrayList<Wage>();
