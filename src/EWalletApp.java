@@ -10,8 +10,8 @@ public class EWalletApp {
 	}
 
 	public static void main(String[] args) {
-		DatabaseAccess.getURL();
-		DatabaseAccess.createConnection();
+		DatabaseAccess.startDB();
+		DatabaseAccess.shutdown();
 	}
 
 	static void featureDemoDD() {

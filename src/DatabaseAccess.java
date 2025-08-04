@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
@@ -13,8 +14,14 @@ public class DatabaseAccess {
 	private static Connection conn = null;
 	private static Statement stmt = null;
 	 
-	 
-	// Establishes connection from .env file
+	
+	// Public interface for starting database
+	public static void startDB() {
+		getURL();
+		createConnection();
+	}
+	
+	// Fetches URL from .env file
 	public static void getURL() {
 		
 		try {
@@ -25,29 +32,64 @@ public class DatabaseAccess {
 				String currLine = inFS.nextLine();
 				if (currLine.contains("DB_URL")) {
 					dbURL = currLine.substring(currLine.indexOf("j"), currLine.length());
-					System.out.println(dbURL);
 				}
 			}
 			inFS.close();
 		} 
 		catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("File not found!");
 			e.printStackTrace();
 		}
 	}
-    public static void createConnection()
+	
+	// Starts connection to local DB
+    private static void createConnection()
     {
         try
         {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
             conn = DriverManager.getConnection(dbURL); 
-            System.out.println("no worries");
+            System.out.println("Connection successful");
         }
         catch (Exception except)
         {
         	System.out.println("fail");
             except.printStackTrace();
         }
-        
     }
+    
+    // Shuts down connection
+    public static void shutdown()
+    {
+        try
+        {
+            if (stmt != null)
+            {
+                stmt.close();
+            }
+            if (conn != null)
+            {
+                DriverManager.getConnection(dbURL + ";shutdown=true");
+                conn.close();
+            }           
+        }
+        catch (SQLException sqlExcept)
+        {
+            
+        }
+
+    }
+    
+    // Executes a given query
+	public static void query(String sqlStatement) {
+		try {
+			stmt = conn.createStatement();
+			stmt.execute(sqlStatement);
+			stmt.close();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+    
 }
