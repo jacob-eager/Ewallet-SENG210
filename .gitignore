@@ -1,5 +1,7 @@
 /bin/
-/.settings/
-/.classpath/
-/.$ERD.drawio.bkp/
+.settings/
+.classpath
+.$ERD.drawio.bkp
 /ERD.drawio/
+.project
+derby.log
