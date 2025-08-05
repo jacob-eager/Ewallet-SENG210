@@ -12,7 +12,7 @@ public class EWalletApp {
 	private static ArrayList<User> allData;
 	private static int currUserIndex;
 
-	private static ExpenseCalculator expenseCalculator = new ExpenseCalculator();
+	private static ExpenseCalculator expenseCalculator;
 
 
     public void createUser(String username, String password) {
@@ -23,21 +23,22 @@ public class EWalletApp {
 		DatabaseAccess.getURL(); 
 		DatabaseAccess.createConnection(); 
 		
-		ExpenseCalculator expenseCalculator = new ExpenseCalculator();
+		// REMOVE LATER: Debug test user
+		 allData = new ArrayList<User>();
+		 allData.add(createTestUser());
+		 currUserIndex = 0;
 
+		expenseCalculator = new ExpenseCalculator(allData.get(currUserIndex));
+		
 		//Putting note here: obviously they all show up at once.
 		//Will need changing in future
 		displayLoginScreen();
-		showReportGUI();
-		initalizeMainScreen(expenseCalculator);
+		
+		
 	}
 	
 	public static void showReportGUI() {
 		
-		// REMOVE LATER: Debug test user
-		allData = new ArrayList<User>();
-		allData.add(createTestUser());
-		currUserIndex = 0;
 		new ReportFrame(allData.get(currUserIndex));
 	}
 
@@ -71,7 +72,9 @@ public class EWalletApp {
                 if (username.equals("testUser") && password.equals("password123")) {
                     feedbackLabel.setText("Login Successful!");
                     frame.dispose();      // close login window
-                    featureDemoDD();      // run the original demo
+                    initalizeMainScreen(expenseCalculator);
+                    showReportGUI();
+                    // featureDemoDD();      // run the original demo
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
@@ -94,7 +97,7 @@ public class EWalletApp {
 		// inital Jframe stuff
 		JFrame jframe = new JFrame();
 		jframe.setTitle("E-Wallet App");
-		jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
+		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.setSize(400, 300);
 
 		// Creating GUI stuff
@@ -135,7 +138,7 @@ public class EWalletApp {
 					String newIncomeText = incomeInput.getText();
 					double newIncomeAmount = Double.parseDouble(newIncomeText);
 					// defaults to "Unspecified" because there currently isn't a way TO specify
-					Wage newWage = new Wage("Unspecified", newIncomeAmount);
+					Wage newWage = new Wage("Unspecified", newIncomeAmount, "August");
 					expenseCalculator.userAtHand.addIncome(newWage);
 
 					incomeConfirmation.setText("New Income Submitted!");
@@ -170,8 +173,8 @@ public class EWalletApp {
 					String newExpenseText = expenseInput.getText();
 					double newExpenseAmount = Double.parseDouble(newExpenseText);
 					// defaults to "Unspecified" because there currently isn't a way TO specify
-					Expense expense = new Expense("Unspecified", newExpenseAmount);
-					expenseCalculator.userAtHand.addExpense(expense);
+					Expense expense = new Expense("Unspecified", newExpenseAmount, 1);
+					expenseCalculator.userAtHand.addSpending(expense);
 
 					expenseConfirmation.setText("New Expense Submitted!");
 
