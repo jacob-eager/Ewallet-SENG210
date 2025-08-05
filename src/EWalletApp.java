@@ -13,10 +13,11 @@ public class EWalletApp {
         // method for creating a user (future implementation)
     }
 
-    public static void main(String[] args) {
-        // Show login screen first before running demos
-        displayLoginScreen();
-    }
+	public static void main(String[] args) {
+		DatabaseAccess.getURL();
+		DatabaseAccess.createConnection();
+	}
+
 
     // === New Login Screen Method ===
     private static void displayLoginScreen() {
