@@ -1,6 +1,8 @@
 import java.awt.*;          // added for login GUI
 import java.awt.event.*;             // added for login GUI layout
 import java.util.ArrayList;       // added for button event
+import java.util.regex.Pattern;
+
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.DocumentFilter;
@@ -30,8 +32,6 @@ public class EWalletApp {
 
 		expenseCalculator = new ExpenseCalculator(allData.get(currUserIndex));
 		
-		//Putting note here: obviously they all show up at once.
-		//Will need changing in future
 		displayLoginScreen();
 		
 		
@@ -69,12 +69,27 @@ public class EWalletApp {
                 String password = new String(passwordText.getPassword());
 
                 // For Sprint 0
-                if (username.equals("testUser") && password.equals("password123")) {
+                if (validateUsername(username) && validatePassword(password)) {
                     feedbackLabel.setText("Login Successful!");
+					if (!allData.contains(new User(username, password))) {
+						User newUser = new User(username, password);
+						allData.add(newUser);
+						currUserIndex = allData.indexOf(newUser);
+
+					}
                     frame.dispose();      // close login window
                     initalizeMainScreen(expenseCalculator);
+                    
+                    // Adds test data if none is present
+                    if (allData.get(currUserIndex).getIncome().size() == 0) {
+                    		User testUser = createTestUser();
+                    		allData.add(testUser);
+                    		currUserIndex = allData.indexOf(testUser);
+                    }
+                    
                     showReportGUI();
-                    // featureDemoDD();      // run the original demo
+                    
+                    // featureDemoDD();      // run the original demo (currently broken)
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
@@ -92,7 +107,7 @@ public class EWalletApp {
         frame.setVisible(true);
     }
 
-		//copy+pasted by Ethan from previous code
+	//copy+pasted by Ethan from previous code
 	private static void initalizeMainScreen(ExpenseCalculator expenseCalculator) {
 		// inital Jframe stuff
 		JFrame jframe = new JFrame();
@@ -277,5 +292,12 @@ public class EWalletApp {
 		return testUser;
 	}
 
+	private static boolean validateUsername(String username) {
+		return Pattern.matches("^.{3,16}$", username);
+	}
+	
+	private static boolean validatePassword(String password) {
+		return Pattern.matches("^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-={}|\\[\\]:\";'<>?,./]).{3,}$", password);
+	}
 }
 

@@ -546,14 +546,14 @@ public class ReportFrame extends JFrame implements ActionListener {
 						textContents += "<tr><th>Source</th><th>Amount</th><th>Month</th></tr>";
 					}
 					for (Wage w : incomeList) {
-						textContents += "<tr><td>" + w.source + "</td><td>" + w.amount + "</td><td>" + w.month + "</td></tr>\n";
+						textContents += "<tr><td>" + w.source + "</td><td>" + formatMoney(w.amount) + "</td><td>" + w.month + "</td></tr>\n";
 					}
 					
 					if (expenseList.size() != 0) {
 						textContents += "<tr><th>Source</th><th>Amount</th><th>Month</th></tr>";
 					}
 					for (Expense e : expenseList) {
-						textContents += "<tr><td>" + e.source + "</td><td>" + e.amount + "</td><td>" + e.yearlyFrequency + "</td></tr>\n";
+						textContents += "<tr><td>" + e.source + "</td><td>" + formatMoney(e.amount) + "</td><td>" + e.yearlyFrequency + "</td></tr>\n";
 					}
 					
 					textContents += "</table>";
