@@ -12,7 +12,7 @@ public class EWalletApp {
 	private static ArrayList<User> allData;
 	private static int currUserIndex;
 
-	private static ExpenseCalculator expenseCalculator = new ExpenseCalculator();
+	//private static ExpenseCalculator expenseCalculator = new ExpenseCalculator();
 
 
     public void createUser(String username, String password) {
@@ -23,13 +23,13 @@ public class EWalletApp {
 		DatabaseAccess.getURL(); 
 		DatabaseAccess.createConnection(); 
 		
-		ExpenseCalculator expenseCalculator = new ExpenseCalculator();
+		//ExpenseCalculator expenseCalculator = new ExpenseCalculator();
 
 		//Putting note here: obviously they all show up at once.
 		//Will need changing in future
 		displayLoginScreen();
 		showReportGUI();
-		initalizeMainScreen(expenseCalculator);
+		initalizeMainScreen();
 	}
 	
 	public static void showReportGUI() {
@@ -90,7 +90,7 @@ public class EWalletApp {
     }
 
 		//copy+pasted by Ethan from previous code
-	private static void initalizeMainScreen(ExpenseCalculator expenseCalculator) {
+	private static void initalizeMainScreen(/*ExpenseCalculator expenseCalculator*/) {
 		// inital Jframe stuff
 		JFrame jframe = new JFrame();
 		jframe.setTitle("E-Wallet App");
@@ -108,9 +108,8 @@ public class EWalletApp {
 		JLabel incomeConfirmation = new JLabel("");
 		JLabel expenseConfirmation = new JLabel("");
 
-		// Admittedly code taken from chatGPT, to prevent none numbers from being
-		// inputed
-		DocumentFilter numberFilter = new DocumentFilter(); //changed to DocumentFilter. We'll see how that works out...
+		//Make filter so only numbers can be inputted
+		DocumentFilter numberFilter = new NumericDocumentFilter(); //had to make new class for Numeric Filter
 		((AbstractDocument) incomeInput.getDocument()).setDocumentFilter(numberFilter);
 		((AbstractDocument) expenseInput.getDocument()).setDocumentFilter(numberFilter);
 
@@ -135,8 +134,9 @@ public class EWalletApp {
 					String newIncomeText = incomeInput.getText();
 					double newIncomeAmount = Double.parseDouble(newIncomeText);
 					// defaults to "Unspecified" because there currently isn't a way TO specify
-					Wage newWage = new Wage("Unspecified", newIncomeAmount);
-					expenseCalculator.userAtHand.addIncome(newWage);
+					//That will be changed with Database
+					/*Wage newWage = new Wage("Unspecified", newIncomeAmount);
+					expenseCalculator.userAtHand.addIncome(newWage);*/
 
 					incomeConfirmation.setText("New Income Submitted!");
 
@@ -170,8 +170,8 @@ public class EWalletApp {
 					String newExpenseText = expenseInput.getText();
 					double newExpenseAmount = Double.parseDouble(newExpenseText);
 					// defaults to "Unspecified" because there currently isn't a way TO specify
-					Expense expense = new Expense("Unspecified", newExpenseAmount);
-					expenseCalculator.userAtHand.addExpense(expense);
+					/*Expense expense = new Expense("Unspecified", newExpenseAmount);
+					expenseCalculator.userAtHand.addExpense(expense);*/
 
 					expenseConfirmation.setText("New Expense Submitted!");
 
@@ -201,8 +201,12 @@ public class EWalletApp {
 		expensePanel.add(confirmExpenseButton);
 		expensePanel.add(expenseConfirmation);
 
-		jframe.add(incomePanel, BorderLayout.NORTH);
-		jframe.add(expensePanel, BorderLayout.CENTER);
+		
+		//grid layout is hard coded...works here but holy crap bad long term solution
+		jframe.setLayout(new GridLayout(2, 1));
+
+		jframe.add(incomePanel);
+		jframe.add(expensePanel);
 
 		// Wrap up stuff
 		jframe.setVisible(true);
