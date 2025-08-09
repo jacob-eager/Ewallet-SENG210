@@ -28,7 +28,6 @@ public class EWalletApp {
 		//Putting note here: obviously they all show up at once.
 		//Will need changing in future
 		displayLoginScreen();
-		showReportGUI();
 		initalizeMainScreen();
 	}
 	
@@ -116,6 +115,8 @@ public class EWalletApp {
 		JButton confirmIncomeButton = new JButton("Add");
 		JButton confirmExpenseButton = new JButton("Add");
 		// JButton reportButton = new JButton("Print an Expense Report");
+		
+		JButton moveToReportScreenButton = new JButton("View Reports");
 
 
 		// action listeners, I.E button functionality
@@ -184,6 +185,14 @@ public class EWalletApp {
 
 		});
 		
+		moveToReportScreenButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportGUI();
+				jframe.dispose();
+			}
+		});
+
 		// Panels, to organize page
 		JPanel incomePanel = new JPanel();
 		incomePanel.setLayout(new BoxLayout(incomePanel, BoxLayout.Y_AXIS));
@@ -203,10 +212,15 @@ public class EWalletApp {
 
 		
 		//grid layout is hard coded...works here but holy crap bad long term solution
-		jframe.setLayout(new GridLayout(2, 1));
+		//Now makes the grid layout inside of a BorderLayout thanks to panels
+		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
+		mainPanel.add(incomePanel);
+		mainPanel.add(expensePanel);
 
-		jframe.add(incomePanel);
-		jframe.add(expensePanel);
+		jframe.add(mainPanel, BorderLayout.CENTER);
+
+		// Makes move button a foot note
+		jframe.add(moveToReportScreenButton, BorderLayout.SOUTH);
 
 		// Wrap up stuff
 		jframe.setVisible(true);
