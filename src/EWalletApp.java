@@ -20,15 +20,14 @@ public class EWalletApp {
     }
 
 	public static void main(String[] args) {
-		DatabaseAccess.getURL(); 
-		DatabaseAccess.createConnection(); 
-		
-		//ExpenseCalculator expenseCalculator = new ExpenseCalculator();
-
-		//Putting note here: obviously they all show up at once.
-		//Will need changing in future
-		displayLoginScreen();
-		initalizeMainScreen();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            DatabaseAccess.getURL();
+            DatabaseAccess.createConnection();
+            DatabaseAccess.initUsersTable();   // login GUI
+            DatabaseAccess.seedTestUser();     // login GUI
+            displayLoginScreen();
+            // showReportGUI(); // moved to after successful login (login GUI)
+        });
 	}
 	
 	public static void showReportGUI() {
@@ -60,17 +59,17 @@ public class EWalletApp {
         JButton loginButton = new JButton("Login");
         JLabel feedbackLabel = new JLabel();
 
-        // Action listener for the login button
+        // Action listener for the login button (login GUI: now checks DB)
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = userText.getText();
                 String password = new String(passwordText.getPassword());
 
-                // For Sprint 0
-                if (username.equals("testUser") && password.equals("password123")) {
+                // login GUI: validate credentials using DB
+                if (DatabaseAccess.authenticate(username, password)) {
                     feedbackLabel.setText("Login Successful!");
-                    frame.dispose();      // close login window
-                    featureDemoDD();      // run the original demo
+                    frame.dispose();      // close login window (login GUI)
+                    showReportGUI();      // open report after successful login (login GUI)
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
@@ -293,4 +292,3 @@ public class EWalletApp {
 	}
 
 }
-
