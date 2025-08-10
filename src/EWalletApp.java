@@ -2,6 +2,8 @@ import java.awt.*;          // added for login GUI
 import java.awt.event.*;             // added for login GUI layout
 import java.util.ArrayList;       // added for button event
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.DocumentFilter;
 
 public class EWalletApp {
 	// this is the app class, has the GUI and create one object of your expense
@@ -10,13 +12,14 @@ public class EWalletApp {
 	private static ArrayList<User> allData;
 	private static int currUserIndex;
 
+	//private static ExpenseCalculator expenseCalculator = new ExpenseCalculator();
+
 
     public void createUser(String username, String password) {
         // method for creating a user (future implementation)
     }
 
 	public static void main(String[] args) {
-        // show login first; report opens only after successful DB login (login GUI)
         javax.swing.SwingUtilities.invokeLater(() -> {
             DatabaseAccess.getURL();
             DatabaseAccess.createConnection();
@@ -83,6 +86,144 @@ public class EWalletApp {
         frame.add(panel);
         frame.setVisible(true);
     }
+
+		//copy+pasted by Ethan from previous code
+	private static void initalizeMainScreen(/*ExpenseCalculator expenseCalculator*/) {
+		// inital Jframe stuff
+		JFrame jframe = new JFrame();
+		jframe.setTitle("E-Wallet App");
+		jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
+		jframe.setSize(400, 300);
+
+		// Creating GUI stuff
+		JLabel incomeLabel = new JLabel("Add Income (per month)");
+		JLabel expenseLabel = new JLabel("Add Expense");
+
+		JTextField incomeInput = new JTextField();
+		JTextField expenseInput = new JTextField();
+
+		// little messages that show up under the input areas to show it went through
+		JLabel incomeConfirmation = new JLabel("");
+		JLabel expenseConfirmation = new JLabel("");
+
+		//Make filter so only numbers can be inputted
+		DocumentFilter numberFilter = new NumericDocumentFilter(); //had to make new class for Numeric Filter
+		((AbstractDocument) incomeInput.getDocument()).setDocumentFilter(numberFilter);
+		((AbstractDocument) expenseInput.getDocument()).setDocumentFilter(numberFilter);
+
+		JButton confirmIncomeButton = new JButton("Add");
+		JButton confirmExpenseButton = new JButton("Add");
+		// JButton reportButton = new JButton("Print an Expense Report");
+		
+		JButton moveToReportScreenButton = new JButton("View Reports");
+
+
+		// action listeners, I.E button functionality
+		confirmIncomeButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (incomeInput.getText() == null || incomeInput.getText().isEmpty()) {
+					incomeConfirmation.setText("Please insert a number, it can't be blank");
+
+					// Functionally, resets the text to be blank after 3 seconds
+					javax.swing.Timer time = new javax.swing.Timer(3000, event -> incomeConfirmation.setText(""));
+					time.setRepeats(false);
+					time.start();
+				} else {
+					String newIncomeText = incomeInput.getText();
+					double newIncomeAmount = Double.parseDouble(newIncomeText);
+					// defaults to "Unspecified" because there currently isn't a way TO specify
+					//That will be changed with Database
+					/*Wage newWage = new Wage("Unspecified", newIncomeAmount);
+					expenseCalculator.userAtHand.addIncome(newWage);*/
+
+					incomeConfirmation.setText("New Income Submitted!");
+
+					// yes Copy+Paste from GPT again, kinda works
+					// would be better if there was 1 timer shared, hence why its a little funky,
+					// but eh this works
+					// Functionally, resets the text to be blank after 3 seconds
+					javax.swing.Timer time = new javax.swing.Timer(3000, event -> incomeConfirmation.setText(""));
+					time.setRepeats(false);
+					time.start();
+
+				}
+
+			}
+
+		});
+
+		confirmExpenseButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (expenseInput.getText() == null || expenseInput.getText().isEmpty()) {
+					// potentially display error message
+					expenseConfirmation.setText("Please insert a number, it can't be blank");
+
+					// Functionally, resets the text to be blank after 3 seconds
+					javax.swing.Timer time = new javax.swing.Timer(3000, event -> expenseConfirmation.setText(""));
+					time.setRepeats(false);
+					time.start();
+				} else {
+					String newExpenseText = expenseInput.getText();
+					double newExpenseAmount = Double.parseDouble(newExpenseText);
+					// defaults to "Unspecified" because there currently isn't a way TO specify
+					/*Expense expense = new Expense("Unspecified", newExpenseAmount);
+					expenseCalculator.userAtHand.addExpense(expense);*/
+
+					expenseConfirmation.setText("New Expense Submitted!");
+
+					// Functionally, resets the text to be blank after 3 seconds
+					javax.swing.Timer time = new javax.swing.Timer(3000, event -> expenseConfirmation.setText(""));
+					time.setRepeats(false);
+					time.start();
+				}
+			}
+
+		});
+		
+		moveToReportScreenButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportGUI();
+				jframe.dispose();
+			}
+		});
+
+		// Panels, to organize page
+		JPanel incomePanel = new JPanel();
+		incomePanel.setLayout(new BoxLayout(incomePanel, BoxLayout.Y_AXIS));
+		JPanel expensePanel = new JPanel();
+		expensePanel.setLayout(new BoxLayout(expensePanel, BoxLayout.Y_AXIS));
+
+		// Add features to GUI
+		incomePanel.add(incomeLabel);
+		incomePanel.add(incomeInput);
+		incomePanel.add(confirmIncomeButton);
+		incomePanel.add(incomeConfirmation);
+
+		expensePanel.add(expenseLabel);
+		expensePanel.add(expenseInput);
+		expensePanel.add(confirmExpenseButton);
+		expensePanel.add(expenseConfirmation);
+
+		
+		//grid layout is hard coded...works here but holy crap bad long term solution
+		//Now makes the grid layout inside of a BorderLayout thanks to panels
+		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
+		mainPanel.add(incomePanel);
+		mainPanel.add(expensePanel);
+
+		jframe.add(mainPanel, BorderLayout.CENTER);
+
+		// Makes move button a foot note
+		jframe.add(moveToReportScreenButton, BorderLayout.SOUTH);
+
+		// Wrap up stuff
+		jframe.setVisible(true);
+	}
 
     static void featureDemoDD() {
 		User testUser = new User("testUser", "password123");
