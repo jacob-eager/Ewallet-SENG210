@@ -65,12 +65,10 @@ public class DatabaseAccess {
     // ===== Added for login GUI: create USERS table if missing =====
     public static void initUsersTable() {
         try (Statement st = conn.createStatement()) {
-            st.executeUpdate("""
-                CREATE TABLE USERS (
-                  USERNAME VARCHAR(100) PRIMARY KEY,
-                  PASSWORD VARCHAR(200) NOT NULL
-                )
-            """);
+            st.executeUpdate("CREATE TABLE USERS "
+            		+ "(USERNAME VARCHAR(100) PRIMARY KEY,"
+            		+ " PASSWORD VARCHAR(200) NOT NULL)"
+            );
         } catch (SQLException e) {
             // X0Y32 = table already exists
             if (!"X0Y32".equals(e.getSQLState())) e.printStackTrace();
