@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+
 import java.io.*;
 
 public class ExpenseCalculator implements Expenser {
@@ -132,53 +135,71 @@ public class ExpenseCalculator implements Expenser {
 
 	public void exportReport(String reportTitle) {
 
+		JFileChooser fileChooser = new JFileChooser();
+		String filePath = null;
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = fileChooser.showSaveDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			filePath = fileChooser.getSelectedFile().toString();
+		}
+
+		File report = new File(filePath + reportTitle + ".csv");
 		try {
-			File report = new File(reportTitle + ".json");
 			if (report.createNewFile()) {
 				System.out.println(report.getName() + " created.");
 			} else {
 				System.out.println("File already exists");
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-			FileWriter reportWriter = new FileWriter(reportTitle + ".json");
+		try (FileWriter outputStream = new FileWriter(filePath + "/" + reportTitle + ".csv");
+				BufferedWriter outFS = new BufferedWriter(outputStream)) {
 
-			switch (reportTitle.toLowerCase()) {
+			String reportContents = "";
 
-			case "expense":
+			switch (reportTitle) {
 
-				ArrayList<Expense> expenses = userAtHand.getSpending();
+			case "Full Report":
 
-				for (int i = 0; i < expenses.size(); i++) {
-					reportWriter.write("$" + expenses.get(i).amount + " from " + expenses.get(i).source
-							+ " with a frequency of " + expenses.get(i).yearlyFrequency + " times a year.");
+				reportContents += "Income\n";
+				reportContents += "source,amount,month\n";
+				for (Wage wage : userAtHand.getIncome()) {
+					reportContents += wage.source + "," + wage.amount + "," + wage.month + "\n";
 				}
 
-				break;
-
-			case "income":
-
-				ArrayList<Wage> income = userAtHand.getIncome();
-
-				for (int i = 0; i < income.size(); i++) {
-					reportWriter.write("$" + income.get(i).amount + " from " + income.get(i).source
-							+ " in the month of " + income.get(i).month);
+				reportContents += "Expenses\n";
+				reportContents += "category,amount,yearly_frequency\n";
+				for (Expense expense : userAtHand.getSpending()) {
+					reportContents += expense.source + "," + expense.amount + "," + expense.yearlyFrequency + "\n";
 				}
-
 				break;
 
+			case "Expense Report":
+				reportContents += "category,amount,yearly_frequency\n";
+				for (Expense expense : userAtHand.getSpending()) {
+					reportContents += expense.source + "," + expense.amount + "," + expense.yearlyFrequency + "\n";
+				}
+				break;
+
+			case "Income Report":
+				reportContents += "source,amount,month\n";
+				for (Wage wage : userAtHand.getIncome()) {
+					reportContents += wage.source + "," + wage.amount + "," + wage.month + "\n";
+				}
+				break;
 			}
-
-			reportWriter.close();
-
-			System.out.println("Report successfully exported.");
-
+			outFS.write(reportContents);
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found!");
+			e.printStackTrace();
 		}
 
 		catch (IOException e) {
 			System.out.println("Unexpected error occcured exporting file");
 			e.getStackTrace();
 		}
-
 	}
 
 	public Currency convertForeignCurrency(Currency C, double amount, Boolean toUSD) {
@@ -193,7 +214,6 @@ public class ExpenseCalculator implements Expenser {
 			result.rate = C.rate;
 			System.out.println("Your balance in " + C.name + " from USD: " + amount / C.rate);
 		}
-
 		return result;
 	}
 
