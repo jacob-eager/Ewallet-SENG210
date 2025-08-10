@@ -1,10 +1,18 @@
-/bin/
-.settings/
-.classpath
-.$ERD.drawio.bkp
-/ERD.drawio/
-.project
-derby.log
+﻿# Build artifacts
+*.class
+out/
+
+# Local DB + env
+ewalletdb/
+ewalletdb*/
 .env
 
+# Local jars (Derby)
+lib/
 
+# CSV exports
+*.csv
+
+# OS junk
+.DS_Store
+Thumbs.db
