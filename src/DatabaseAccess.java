@@ -32,7 +32,7 @@ public class DatabaseAccess {
 					if (eq >= 0) {
 						dbURL = currLine.substring(eq + 1).trim(); // safer parsing
 					}
-					System.out.println(dbURL);
+					// System.out.println(dbURL);
 				}
 			}
 			inFS.close();
@@ -54,11 +54,11 @@ public class DatabaseAccess {
         {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
             conn = DriverManager.getConnection(dbURL); 
-            System.out.println("no worries");
+            // System.out.println("no worries");
         }
         catch (Exception except)
         {
-        	System.out.println("fail");
+        		// System.out.println("fail");
             except.printStackTrace();
         }
     }
