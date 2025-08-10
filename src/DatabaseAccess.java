@@ -2,11 +2,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;                  // added
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.sql.PreparedStatement;          // added
 import java.sql.ResultSet;                  // added
 import java.sql.SQLException;               // added
+import java.sql.Statement;
 import java.util.Scanner;
 
 public class DatabaseAccess {
@@ -37,17 +38,17 @@ public class DatabaseAccess {
 			inFS.close();
 		} 
 		catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			// default so login GUI isn't blocked if .env is missing
 			dbURL = "jdbc:derby:ewalletdb;create=true";
+			
+			e.printStackTrace();
 		}
 		catch (IOException e) {                 // added
 			e.printStackTrace();
 		}
 	}
 
-    public static void createConnection()
+	public static void createConnection()
     {
         try
         {
@@ -61,6 +62,89 @@ public class DatabaseAccess {
             except.printStackTrace();
         }
     }
+    
+	public static void initiateDB() {
+
+		String schemaText = "";
+
+		try (Statement st = conn.createStatement();
+				FileInputStream fileByteStream = new FileInputStream("schema.sql");
+				Scanner inFS = new Scanner(fileByteStream);) {
+
+			while (inFS.hasNext()) {
+				schemaText += inFS.nextLine() + "\n";
+			}
+
+			// Splits the different statements since Derby can only run one statement at a
+			// time
+			String[] statements = schemaText.split(";");
+
+			// Executes CREATE SCHEMA if the EWallet schema doesn't exist
+			ResultSet results = st.executeQuery("SELECT SCHEMANAME FROM SYS.SYSSCHEMAS");
+			boolean schemaExists = false;
+
+			while (results.next()) {
+				String schemaName = results.getString(1);
+				if (schemaName.equals("EWALLET")) {
+					schemaExists = true;
+					// System.out.println("Schema exists!");
+				}
+			}
+
+			if (!schemaExists) {
+				st.executeUpdate(statements[0]);
+			}
+
+			// Creates tables if they don't exist
+			DatabaseMetaData dbmd = conn.getMetaData();
+			String[] types = { "TABLE" };
+
+			results = dbmd.getTables(null, "EWALLET", "%", types);
+			boolean usersExists = false;
+			boolean expenseExists = false;
+			boolean wageExists = false;
+
+			while (results.next()) {
+				String tableName = results.getString("TABLE_NAME");
+				if (tableName.equalsIgnoreCase("users")) {
+					usersExists = true;
+					// System.out.println("Users exists!");
+				}
+				if (tableName.equalsIgnoreCase("expense")) {
+					expenseExists = true;
+					// System.out.println("Expense exists!");
+				}
+				if (tableName.equalsIgnoreCase("wage")) {
+					wageExists = true;
+					// System.out.println("Wage exists!");
+				}
+			}
+
+			if (!usersExists) {
+				st.executeUpdate(statements[1]);
+			}
+
+			if (!expenseExists) {
+				st.executeUpdate(statements[2]);
+			}
+
+			if (!wageExists) {
+				st.executeUpdate(statements[3]);
+			}
+
+		} catch (FileNotFoundException e) {
+			System.out.println("schema.sql not found!");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// X0Y32 = table already exists
+			if (!"X0Y32".equals(e.getSQLState()))
+				e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
     // ===== Added for login GUI: create USERS table if missing =====
     public static void initUsersTable() {

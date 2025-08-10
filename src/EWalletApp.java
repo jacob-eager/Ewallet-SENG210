@@ -23,7 +23,7 @@ public class EWalletApp {
         javax.swing.SwingUtilities.invokeLater(() -> {
             DatabaseAccess.getURL();
             DatabaseAccess.createConnection();
-            DatabaseAccess.initUsersTable();   // login GUI
+            DatabaseAccess.initiateDB();   // login GUI
             DatabaseAccess.seedTestUser();     // login GUI
             displayLoginScreen();
             // showReportGUI(); // moved to after successful login (login GUI)
