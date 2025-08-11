@@ -77,7 +77,7 @@ public class UserDAO implements DatabaseAccessObject<User> {
 
 	@Override
 	public void delete(User deletedUser) {
-		DatabaseAccess.resultsQuery("DELETE FROM EWALLET.users WHERE username = " + deletedUser.username);
+		DatabaseAccess.voidQuery("DELETE FROM EWALLET.users WHERE username = " + deletedUser.username);
 	}
 
 }

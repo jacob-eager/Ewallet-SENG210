@@ -98,7 +98,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 
 	@Override
 	public void delete(Wage deletedWage) {
-		DatabaseAccess.resultsQuery("DELETE FROM EWallet.wage WHERE wage_id = " + deletedWage.wageID);
+		DatabaseAccess.voidQuery("DELETE FROM EWallet.wage WHERE wage_id = " + deletedWage.wageID);
 		
 	}
 

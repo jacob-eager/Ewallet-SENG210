@@ -105,7 +105,7 @@ public class ExpenseDAO implements DatabaseAccessObject<Expense> {
 
 	@Override
 	public void delete(Expense deletedExpense) {
-		DatabaseAccess.resultsQuery("DELETE FROM EWALLET.expense WHERE expense_id = " + deletedExpense.expenseID);
+		DatabaseAccess.voidQuery("DELETE FROM EWALLET.expense WHERE expense_id = " + deletedExpense.expenseID);
 	}
 
 }
