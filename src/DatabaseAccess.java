@@ -37,15 +37,14 @@ public class DatabaseAccess {
 					if (eq >= 0) {
 						dbURL = currLine.substring(eq + 1).trim(); // safer parsing
 					}
-					// System.out.println(dbURL);
 				}
 			}
 			inFS.close();
+			fileByteStream.close();
 		} 
 		catch (FileNotFoundException e) {
 			// default so login GUI isn't blocked if .env is missing
 			dbURL = "jdbc:derby:ewalletdb;create=true";
-			
 			e.printStackTrace();
 		}
 		catch (IOException e) {                 // added
@@ -53,21 +52,17 @@ public class DatabaseAccess {
 		}
 	}
 
-	public static void createConnection()
-    {
-        try
-        {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-            conn = DriverManager.getConnection(dbURL); 
-            // System.out.println("no worries");
-        }
-        catch (Exception except)
-        {
-        		// System.out.println("fail");
-            except.printStackTrace();
-        }
-    }
+	@SuppressWarnings("deprecation")
+	public static void createConnection() {
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+			conn = DriverManager.getConnection(dbURL);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
     
+	// Creates the schema and database from schema.sql if they don't exist
 	public static void initiateDB() {
 
 		String schemaText = "";
@@ -76,34 +71,30 @@ public class DatabaseAccess {
 				FileInputStream fileByteStream = new FileInputStream("schema.sql");
 				Scanner inFS = new Scanner(fileByteStream);) {
 
+			// Gets text from schema.sql
 			while (inFS.hasNext()) {
 				schemaText += inFS.nextLine() + "\n";
 			}
 
-			// Splits the different statements since Derby can only run one statement at a
-			// time
+			// Splits the different statements since Derby can only run one statement at a time
 			String[] statements = schemaText.split(";");
 
-			// Executes CREATE SCHEMA if the EWallet schema doesn't exist
+			// Checks if EWALLET schema exists
 			ResultSet results = st.executeQuery("SELECT SCHEMANAME FROM SYS.SYSSCHEMAS");
 			boolean schemaExists = false;
-
 			while (results.next()) {
 				String schemaName = results.getString(1);
 				if (schemaName.equals("EWALLET")) {
 					schemaExists = true;
-					// System.out.println("Schema exists!");
 				}
 			}
 
-			if (!schemaExists) {
-				st.executeUpdate(statements[0]);
-			}
+			// If the schema doesn't exist, executes CREATE SCHEMA statement
+			if (!schemaExists) st.executeUpdate(statements[0]);
 
-			// Creates tables if they don't exist
+			// Checks if each table exists
 			DatabaseMetaData dbmd = conn.getMetaData();
 			String[] types = { "TABLE" };
-
 			results = dbmd.getTables(null, "EWALLET", "%", types);
 			boolean usersExists = false;
 			boolean expenseExists = false;
@@ -113,30 +104,23 @@ public class DatabaseAccess {
 				String tableName = results.getString("TABLE_NAME");
 				if (tableName.equalsIgnoreCase("users")) {
 					usersExists = true;
-					// System.out.println("Users exists!");
 				}
 				if (tableName.equalsIgnoreCase("expense")) {
 					expenseExists = true;
-					// System.out.println("Expense exists!");
 				}
 				if (tableName.equalsIgnoreCase("wage")) {
 					wageExists = true;
-					// System.out.println("Wage exists!");
 				}
 			}
 
-			if (!usersExists) {
-				st.executeUpdate(statements[1]);
-			}
+			// If the tables don't exist, executes the CREATE TABLE statements
+			if (!usersExists) st.executeUpdate(statements[1]);
+			
+			if (!expenseExists) st.executeUpdate(statements[2]);
+			
+			if (!wageExists) st.executeUpdate(statements[3]);
 
-			if (!expenseExists) {
-				st.executeUpdate(statements[2]);
-			}
-
-			if (!wageExists) {
-				st.executeUpdate(statements[3]);
-			}
-
+			
 		} catch (FileNotFoundException e) {
 			System.out.println("schema.sql not found!");
 			e.printStackTrace();
@@ -145,7 +129,6 @@ public class DatabaseAccess {
 			if (!"X0Y32".equals(e.getSQLState()))
 				e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -208,8 +191,8 @@ public class DatabaseAccess {
 
     }
     
-    // Executes a given query
-	public static ResultSet query(String sqlStatement) {
+    // Executes a given query and returns the results
+	public static ResultSet resultsQuery(String sqlStatement) {
 		ResultSet results = null;
 		try {
 			stmt = conn.createStatement();
@@ -221,15 +204,14 @@ public class DatabaseAccess {
 		return results;
 	}
 	
-	public static int executeUpdate(String sqlStatement) {
-		int results = 0;
+	// Executes a given query and does not return the results
+	public static void voidQuery(String sqlStatement) {
 		try {
 			stmt = conn.createStatement();
-			results = stmt.executeUpdate(sqlStatement);
+			stmt.executeUpdate(sqlStatement); // executeUpdate returns an int, which is why these methods need to be different
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return results;
 	}
 }

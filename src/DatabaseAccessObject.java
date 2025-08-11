@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Optional;
 
 public interface DatabaseAccessObject<T> {
 

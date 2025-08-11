@@ -1,23 +1,40 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Optional;
-
 
 public class UserDAO implements DatabaseAccessObject<User> {
 
+	// Currently there is no user_id and username is used as the primary key instead
 	@Override
 	public User get(int id) {
 		User selectedUser = null;
-		ResultSet results = DatabaseAccess.query("SELECT * FROM USER WHERE user_id = " + id);
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWALLET.users WHERE user_id = " + id);
+		try {
+			while (results.next()) {
+                String username = results.getString(1);
+                String password = results.getString(2);
+                
+                selectedUser = new User(username, password);
+			}
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return selectedUser;
+	}
+	
+	public User get(String username) {
+		User selectedUser = null;
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWALLET.users WHERE username = " + username);
 		try {
 			
-			// Since id is a primary key, this can only happen once
+			// Since username is a primary key, this can only happen once
 			while (results.next()) {
-                String username = results.getString(2);
-                String password = results.getString(3);
+                String selected_username = results.getString(1);
+                String password = results.getString(2);
                 
-                selectedUser = new User(id, username, password);
+                selectedUser = new User(selected_username, password);
 			}
 		} 
 		catch (SQLException e) {
@@ -30,14 +47,13 @@ public class UserDAO implements DatabaseAccessObject<User> {
 	@Override
 	public ArrayList<User> getAll() {
 		ArrayList<User> allUsers = new ArrayList<User>();
-		ResultSet results = DatabaseAccess.query("SELECT * FROM User");
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWallet.users");
 		try {
 			while (results.next()) {
-				int id = results.getInt(1);
-                String username = results.getString(2);
-                String password = results.getString(3);
+                String username = results.getString(1);
+                String password = results.getString(2);
                 
-                allUsers.add(new User(id, username, password));
+                allUsers.add(new User(username, password));
 			}
 		} 
 		catch (SQLException e) {
@@ -49,7 +65,7 @@ public class UserDAO implements DatabaseAccessObject<User> {
 
 	@Override
 	public void create(User newUser) {
-		DatabaseAccess.query("INSERT INTO User (username, password) VALUES (" + newUser.username + ", " + newUser.pwd + ")");
+		DatabaseAccess.resultsQuery("INSERT INTO EWALLET.users (username, password) VALUES (" + newUser.username + ", " + newUser.pwd + ")");
 		
 	}
 
@@ -61,7 +77,7 @@ public class UserDAO implements DatabaseAccessObject<User> {
 
 	@Override
 	public void delete(User deletedUser) {
-		DatabaseAccess.query("DELETE FROM User WHERE user_id = " + deletedUser.id);
+		DatabaseAccess.resultsQuery("DELETE FROM EWALLET.users WHERE username = " + deletedUser.username);
 	}
 
 }

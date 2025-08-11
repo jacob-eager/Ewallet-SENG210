@@ -1,7 +1,6 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class WageDAO implements DatabaseAccessObject<Wage> {
 
@@ -18,7 +17,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 	@Override
 	public Wage get(int id) {
 		Wage selectedWage = null;
-		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage WHERE wage_id = " + id);
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWallet.wage WHERE wage_id = " + id);
 		try {
 
 			// Since id is a primary key, this can only happen once
@@ -41,7 +40,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 	@Override
 	public ArrayList<Wage> getAll() {
 		ArrayList<Wage> allWages = new ArrayList<Wage>();
-		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage");
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWallet.wage");
 		try {
 			while (results.next()) {
 				int id = results.getInt(1);
@@ -62,7 +61,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 	
 	public ArrayList<Wage> getUserWages() {
 		ArrayList<Wage> userWages = new ArrayList<Wage>();
-		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage WHERE wage_user = '" + currentUser.username + "'");
+		ResultSet results = DatabaseAccess.resultsQuery("SELECT * FROM EWallet.wage WHERE wage_user = '" + currentUser.username + "'");
 		try {
 			while (results.next()) {
 				String username = results.getString(1);
@@ -85,7 +84,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 
 	@Override
 	public void create(Wage newWage) {
-		DatabaseAccess.executeUpdate("INSERT INTO EWallet.wage (wage_user, source, amount, month) VALUES ('"
+		DatabaseAccess.voidQuery("INSERT INTO EWallet.wage (wage_user, source, amount, month) VALUES ('"
 				+ newWage.username + "', '"
 				+ newWage.source + "', " + newWage.amount + ", '" + newWage.month + "')");
 		
@@ -99,7 +98,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 
 	@Override
 	public void delete(Wage deletedWage) {
-		DatabaseAccess.query("DELETE FROM EWallet.wage WHERE wage_id = " + deletedWage.wageID);
+		DatabaseAccess.resultsQuery("DELETE FROM EWallet.wage WHERE wage_id = " + deletedWage.wageID);
 		
 	}
 

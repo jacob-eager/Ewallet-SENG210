@@ -26,14 +26,13 @@ public class EWalletApp {
             DatabaseAccess.initiateDB();   // login GUI
             DatabaseAccess.seedTestUser();     // login GUI
             displayLoginScreen();
-            // showReportGUI(); // moved to after successful login (login GUI)
         });
 	}
 	
 	public static void showReportGUI() {
 		
 		// REMOVE LATER: Debug test user
-		createTestUser();
+		createTestData();
 		new ReportFrame(allData.get(currUserIndex));
 	}
 
@@ -71,7 +70,7 @@ public class EWalletApp {
                     allData.add(new User(username, password));
                     currUserIndex = 0;
                     frame.dispose();      // close login window (login GUI)
-                    showReportGUI();      // open report after successful login (login GUI)
+                    initalizeMainScreen();      // open main screen after successful login (login GUI)
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
@@ -89,7 +88,7 @@ public class EWalletApp {
         frame.setVisible(true);
     }
 
-		//copy+pasted by Ethan from previous code
+	//copy+pasted by Ethan from previous code
 	private static void initalizeMainScreen(/*ExpenseCalculator expenseCalculator*/) {
 		// inital Jframe stuff
 		JFrame jframe = new JFrame();
@@ -227,6 +226,8 @@ public class EWalletApp {
 		jframe.setVisible(true);
 	}
 
+	// As of the update to GUI the old demos work really weird, don't use until fixed
+    @Deprecated
     static void featureDemoDD() {
 		User testUser = new User("testUser", "password123");
 		ExpenseCalculator calculator = new ExpenseCalculator(testUser);
@@ -256,6 +257,8 @@ public class EWalletApp {
 		calculator.whenCanIBuy("Nintendo Switch 2", 500);
 	    
 	}
+    
+    @Deprecated
 	static void featureDemoJA() {
 		User testUser = new User("testUser", "password123");
 		ExpenseCalculator calculator = new ExpenseCalculator(testUser);
@@ -278,20 +281,23 @@ public class EWalletApp {
 		calculator.convertForeignCurrency(yuan, 10000, false);
 	}
 	
-	private static void createTestUser() {
+	// Creates test data for the user if no data exists
+	private static void createTestData() {
 		WageDAO wageAccess = new WageDAO(allData.get(currUserIndex));
 		ExpenseDAO expenseAccess = new ExpenseDAO(allData.get(currUserIndex));
 		
-		wageAccess.create(new Wage(1, allData.get(currUserIndex).username, "Walmart", 400.00, "May"));
-		wageAccess.create(new Wage(2, allData.get(currUserIndex).username, "Walmart", 700.51345465768, "June"));
-		wageAccess.create(new Wage(3, allData.get(currUserIndex).username, "Erbert and Gerberts", 500.0, "May"));
-		wageAccess.create(new Wage(4, allData.get(currUserIndex).username, "Instacart", 10.00, "May"));
-		wageAccess.create(new Wage(5, allData.get(currUserIndex).username, "Instacart", 40.00, "June"));
-		expenseAccess.create(new Expense(1, allData.get(currUserIndex).username, "Shopping", 40.00, 1));
-		expenseAccess.create(new Expense(2, allData.get(currUserIndex).username, "Subscription", 12.00, 12));
-		expenseAccess.create(new Expense(3, allData.get(currUserIndex).username, "Groceries", 100.00, 24));
-		expenseAccess.create(new Expense(4, allData.get(currUserIndex).username, "Doordash", 50.398, 6));
-		
+		if (wageAccess.getUserWages().size() == 0) {
+			wageAccess.create(new Wage(1, allData.get(currUserIndex).username, "Walmart", 400.00, "May"));
+			wageAccess.create(new Wage(2, allData.get(currUserIndex).username, "Walmart", 700.51345465768, "June"));
+			wageAccess.create(new Wage(3, allData.get(currUserIndex).username, "Erbert and Gerberts", 500.0, "May"));
+			wageAccess.create(new Wage(4, allData.get(currUserIndex).username, "Instacart", 10.00, "May"));
+			wageAccess.create(new Wage(5, allData.get(currUserIndex).username, "Instacart", 40.00, "June"));
+			expenseAccess.create(new Expense(1, allData.get(currUserIndex).username, "Shopping", 40.00, 1));
+		}
+		if (expenseAccess.getUserExpenses().size() == 0) {
+			expenseAccess.create(new Expense(2, allData.get(currUserIndex).username, "Subscription", 12.00, 12));
+			expenseAccess.create(new Expense(3, allData.get(currUserIndex).username, "Groceries", 100.00, 24));
+			expenseAccess.create(new Expense(4, allData.get(currUserIndex).username, "Doordash", 50.398, 6));
+		}
 	}
-
 }
