@@ -24,4 +24,12 @@ public class Expense {
 		this.yearlyFrequency = yearlyFrequency;
 	}
 	
+	public Expense(int expenseID, String username, String source, double amount, int yearlyFrequency) {
+		this.expenseID = expenseID;
+		this.username = username;
+		this.source = source;
+		this.amount = amount;
+		this.yearlyFrequency = yearlyFrequency;
+	}
+	
 }

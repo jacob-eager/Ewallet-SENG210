@@ -7,7 +7,7 @@ import java.util.Optional;
 public class UserDAO implements DatabaseAccessObject<User> {
 
 	@Override
-	public Optional<User> get(int id) {
+	public User get(int id) {
 		User selectedUser = null;
 		ResultSet results = DatabaseAccess.query("SELECT * FROM USER WHERE user_id = " + id);
 		try {
@@ -24,7 +24,7 @@ public class UserDAO implements DatabaseAccessObject<User> {
 			e.printStackTrace();
 		}
 		
-		return Optional.ofNullable(selectedUser);
+		return selectedUser;
 	}
 
 	@Override
@@ -48,14 +48,14 @@ public class UserDAO implements DatabaseAccessObject<User> {
 	}
 
 	@Override
-	public void save(User newUser) {
+	public void create(User newUser) {
 		DatabaseAccess.query("INSERT INTO User (username, password) VALUES (" + newUser.username + ", " + newUser.pwd + ")");
 		
 	}
 
 	@Override
 	public void update(User updatedUser, String params) {
-		// IDK if we actually need to do this so I'll fill this in later
+		// IDK if we ever actually need to use this so I'll fill this in later
 		
 	}
 

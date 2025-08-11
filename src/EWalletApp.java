@@ -33,9 +33,7 @@ public class EWalletApp {
 	public static void showReportGUI() {
 		
 		// REMOVE LATER: Debug test user
-		allData = new ArrayList<User>();
-		allData.add(createTestUser());
-		currUserIndex = 0;
+		createTestUser();
 		new ReportFrame(allData.get(currUserIndex));
 	}
 
@@ -68,6 +66,10 @@ public class EWalletApp {
                 // login GUI: validate credentials using DB
                 if (DatabaseAccess.authenticate(username, password)) {
                     feedbackLabel.setText("Login Successful!");
+                    // Temporary, only for testing
+            			allData = new ArrayList<User>();
+                    allData.add(new User(username, password));
+                    currUserIndex = 0;
                     frame.dispose();      // close login window (login GUI)
                     showReportGUI();      // open report after successful login (login GUI)
                 } else {
@@ -276,19 +278,20 @@ public class EWalletApp {
 		calculator.convertForeignCurrency(yuan, 10000, false);
 	}
 	
-	private static User createTestUser() {
-		User testUser = new User("Test User", "Password1");
-		testUser.addIncome(new Wage("Walmart", 400.00, "May"));
-		testUser.addIncome(new Wage("Walmart", 700.51345465768, "June"));
-		testUser.addIncome(new Wage("Erbert and Gerbert's", 500.0, "May"));
-		testUser.addIncome(new Wage("Instacart", 10.00, "May"));
-		testUser.addIncome(new Wage("Instacart", 40.00, "June"));
-		testUser.addSpending(new Expense("Shopping", 40.00, 1));
-		testUser.addSpending(new Expense("Subscription", 12.00, 12));
-		testUser.addSpending(new Expense("Groceries", 100.00, 24));
-		testUser.addSpending(new Expense("Doordash", 50.398, 6));
+	private static void createTestUser() {
+		WageDAO wageAccess = new WageDAO(allData.get(currUserIndex));
+		ExpenseDAO expenseAccess = new ExpenseDAO(allData.get(currUserIndex));
 		
-		return testUser;
+		wageAccess.create(new Wage(1, allData.get(currUserIndex).username, "Walmart", 400.00, "May"));
+		wageAccess.create(new Wage(2, allData.get(currUserIndex).username, "Walmart", 700.51345465768, "June"));
+		wageAccess.create(new Wage(3, allData.get(currUserIndex).username, "Erbert and Gerberts", 500.0, "May"));
+		wageAccess.create(new Wage(4, allData.get(currUserIndex).username, "Instacart", 10.00, "May"));
+		wageAccess.create(new Wage(5, allData.get(currUserIndex).username, "Instacart", 40.00, "June"));
+		expenseAccess.create(new Expense(1, allData.get(currUserIndex).username, "Shopping", 40.00, 1));
+		expenseAccess.create(new Expense(2, allData.get(currUserIndex).username, "Subscription", 12.00, 12));
+		expenseAccess.create(new Expense(3, allData.get(currUserIndex).username, "Groceries", 100.00, 24));
+		expenseAccess.create(new Expense(4, allData.get(currUserIndex).username, "Doordash", 50.398, 6));
+		
 	}
 
 }

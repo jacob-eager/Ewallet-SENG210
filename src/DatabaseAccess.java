@@ -15,7 +15,7 @@ public class DatabaseAccess {
 	private static String dbURL = "";
 	
 	private static Connection conn = null;
-	private static Statement stmt = null;
+	static Statement stmt = null;
 	 
 	
 	// Public interface for starting database
@@ -214,12 +214,22 @@ public class DatabaseAccess {
 		try {
 			stmt = conn.createStatement();
 			results = stmt.executeQuery(sqlStatement);
-			stmt.close();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return results;
 	}
-    
+	
+	public static int executeUpdate(String sqlStatement) {
+		int results = 0;
+		try {
+			stmt = conn.createStatement();
+			results = stmt.executeUpdate(sqlStatement);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
 }

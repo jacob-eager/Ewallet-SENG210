@@ -36,10 +36,16 @@ public class ReportFrame extends JFrame implements ActionListener {
 	JComboBox<String> typeSelector, filterBy, category;
 	JFrame filterDialog;
 	JButton generateReport, importButton, exportButton;
+	WageDAO wageAccess;
+	ExpenseDAO expenseAccess;
+	
 
 	public ReportFrame(User currUser) {
 		
 		this.currUser = currUser;
+		
+		wageAccess = new WageDAO(currUser);
+		expenseAccess = new ExpenseDAO(currUser);
 		
 		ec = new ExpenseCalculator(currUser);
 		
@@ -315,7 +321,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		ArrayList<String[]> expenseTableDataArrayList = new ArrayList<String[]>();
 		
 		// Reads data from the current user's expenses and adds to array
-		for (Expense expense : currUser.getSpending()) {
+		for (Expense expense : expenseAccess.getUserExpenses()) {
 			String[] row = new String[3];
 			row[0] = expense.source;
 			row[1] = formatMoney(expense.amount);
@@ -347,7 +353,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		ArrayList<String[]> incomeTableDataArrayList = new ArrayList<String[]>();
 		
 		// Reads data from the current user's income and adds to array
-		for (Wage incomeSource : currUser.getIncome()) {
+		for (Wage incomeSource : wageAccess.getUserWages()) {
 			String[] row = new String[3];
 			row[0] = incomeSource.source;
 			row[1] = formatMoney(incomeSource.amount);

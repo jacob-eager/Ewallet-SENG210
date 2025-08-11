@@ -5,10 +5,20 @@ import java.util.Optional;
 
 public class WageDAO implements DatabaseAccessObject<Wage> {
 
+	private User currentUser;
+	
+	public WageDAO(User currentUser) {
+		this.currentUser = currentUser;
+	}
+	
+	public void setUser(User newUser) {
+		this.currentUser = newUser;
+	}
+	
 	@Override
-	public Optional<Wage> get(int id) {
+	public Wage get(int id) {
 		Wage selectedWage = null;
-		ResultSet results = DatabaseAccess.query("SELECT * FROM Wage WHERE wage_id = " + id);
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage WHERE wage_id = " + id);
 		try {
 
 			// Since id is a primary key, this can only happen once
@@ -25,21 +35,22 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 			e.printStackTrace();
 		}
 		
-		return Optional.ofNullable(selectedWage);
+		return selectedWage;
 	}
 
 	@Override
 	public ArrayList<Wage> getAll() {
 		ArrayList<Wage> allWages = new ArrayList<Wage>();
-		ResultSet results = DatabaseAccess.query("SELECT * FROM Wage");
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage");
 		try {
 			while (results.next()) {
 				int id = results.getInt(1);
-				String source = results.getString(2);
-				double amount = results.getDouble(3);
-				String month = results.getString(4);
+				String username = results.getString(2);
+				String source = results.getString(3);
+				double amount = results.getDouble(4);
+				String month = results.getString(5);
 
-				allWages.add(new Wage(source, amount, month));
+				allWages.add(new Wage(id, username, source, amount, month));
 			}
 		} 
 		catch (SQLException e) {
@@ -48,11 +59,35 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 		
 		return allWages;
 	}
+	
+	public ArrayList<Wage> getUserWages() {
+		ArrayList<Wage> userWages = new ArrayList<Wage>();
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWallet.wage WHERE wage_user = '" + currentUser.username + "'");
+		try {
+			while (results.next()) {
+				String username = results.getString(1);
+				Integer id = results.getInt(2);
+				String source = results.getString(3);
+				double amount = results.getDouble(4);
+				String month = results.getString(5);
+
+				userWages.add(new Wage(id, username, source, amount, month));
+			}
+		} 
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return userWages;
+		
+	}
 
 	@Override
-	public void save(Wage newWage) {
-		DatabaseAccess.query("INSERT INTO Expense (source, amount, month) VALUES ("
-				+ newWage.source + ", " + newWage.amount + ", " + newWage.month + ")");
+	public void create(Wage newWage) {
+		DatabaseAccess.executeUpdate("INSERT INTO EWallet.wage (wage_user, source, amount, month) VALUES ('"
+				+ newWage.username + "', '"
+				+ newWage.source + "', " + newWage.amount + ", '" + newWage.month + "')");
 		
 	}
 
@@ -64,7 +99,7 @@ public class WageDAO implements DatabaseAccessObject<Wage> {
 
 	@Override
 	public void delete(Wage deletedWage) {
-		DatabaseAccess.query("DELETE FROM Wage WHERE wage_id = " + deletedWage.wageID);
+		DatabaseAccess.query("DELETE FROM EWallet.wage WHERE wage_id = " + deletedWage.wageID);
 		
 	}
 

@@ -5,10 +5,19 @@ import java.util.Optional;
 
 public class ExpenseDAO implements DatabaseAccessObject<Expense> {
 
+	
+	User currentUser;
+	
+	
+	public ExpenseDAO(User currentUser) {
+		this.currentUser = currentUser;
+	}
+	
+	
 	@Override
-	public Optional<Expense> get(int id) {
+	public Expense get(int id) {
 		Expense selectedExpense = null;
-		ResultSet results = DatabaseAccess.query("SELECT * FROM Expense WHERE expense_id = " + id);
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWALLET.expense WHERE expense_id = " + id);
 		try {
 
 			// Since id is a primary key, this can only happen once
@@ -25,21 +34,22 @@ public class ExpenseDAO implements DatabaseAccessObject<Expense> {
 			e.printStackTrace();
 		}
 		
-		return Optional.ofNullable(selectedExpense);
+		return selectedExpense;
 	}
 
 	@Override
 	public ArrayList<Expense> getAll() {
 		ArrayList<Expense> allExpenses = new ArrayList<Expense>();
-		ResultSet results = DatabaseAccess.query("SELECT * FROM User");
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWALLET.expense");
 		try {
 			while (results.next()) {
 				int id = results.getInt(1);
-				String source = results.getString(2);
-				double amount = results.getDouble(3);
-				int yearlyFrequency = results.getInt(4);
+				String username = results.getString(2);
+				String source = results.getString(3);
+				double amount = results.getDouble(4);
+				int yearlyFrequency = results.getInt(5);
 
-				allExpenses.add(new Expense(source, amount, yearlyFrequency));
+				allExpenses.add(new Expense(id, username, source, amount, yearlyFrequency));
 			}
 		} 
 		catch (SQLException e) {
@@ -48,11 +58,43 @@ public class ExpenseDAO implements DatabaseAccessObject<Expense> {
 		
 		return allExpenses;
 	}
+	
+	public ArrayList<Expense> getUserExpenses() {
+		ArrayList<Expense> userExpenses = new ArrayList<Expense>();
+		ResultSet results = DatabaseAccess.query("SELECT * FROM EWALLET.expense WHERE expense_user = '" + currentUser.username + "'");
+		try {
+			while (results.next()) {
+				String username = results.getString(1);
+				int id = results.getInt(2);
+				String source = results.getString(3);
+				double amount = results.getDouble(4);
+				int yearly_frequency = results.getInt(5);
+
+				userExpenses.add(new Expense(id, username, source, amount, yearly_frequency));
+			}
+		} 
+		
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+	        try {
+	            if (results != null) results.close();
+	            if (DatabaseAccess.stmt != null) DatabaseAccess.stmt.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+		
+		return userExpenses;
+		
+	}
 
 	@Override
-	public void save(Expense newExpense) {
-		DatabaseAccess.query("INSERT INTO Expense (source, amount, yearlyFrequency) VALUES ("
-								+ newExpense.source + ", " + newExpense.amount + ", " + newExpense.yearlyFrequency + ")");
+	public void create(Expense newExpense) {
+		DatabaseAccess.executeUpdate("INSERT INTO EWALLET.expense (expense_user, source, amount, yearly_frequency) VALUES ('"
+								+ newExpense.username + "', '"
+								+ newExpense.source + "', " + newExpense.amount + ", " 
+								+ Integer.valueOf(newExpense.yearlyFrequency) + ")");
 		
 	}
 
@@ -64,7 +106,7 @@ public class ExpenseDAO implements DatabaseAccessObject<Expense> {
 
 	@Override
 	public void delete(Expense deletedExpense) {
-		DatabaseAccess.query("DELETE FROM Expense WHERE expense_id = " + deletedExpense.expenseID);
+		DatabaseAccess.query("DELETE FROM EWALLET.expense WHERE expense_id = " + deletedExpense.expenseID);
 	}
 
 }
