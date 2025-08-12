@@ -1,5 +1,6 @@
-Rent,1200.00,12
-Groceries,300.50,12
-Car Insurance,100.00,12
+source,amount,month
+Rent,1200,12
+Groceries,300.5,12
+Car Insurance,100,12
 Streaming Services,15.99,12
-Gym Membership,45.00,12
+Gym Membership,45,12
