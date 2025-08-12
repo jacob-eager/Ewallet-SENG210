@@ -26,7 +26,6 @@ public class EWalletApp {
             DatabaseAccess.initiateDB();   // login GUI
             DatabaseAccess.seedTestUser();     // login GUI
             displayLoginScreen();
-            // showReportGUI(); // moved to after successful login (login GUI)
         });
 	}
 	
@@ -69,7 +68,8 @@ public class EWalletApp {
                 if (DatabaseAccess.authenticate(username, password)) {
                     feedbackLabel.setText("Login Successful!");
                     frame.dispose();      // close login window (login GUI)
-                    showReportGUI();      // open report after successful login (login GUI)
+                    //showReportGUI();      // open report after successful login (login GUI)
+					initalizeMainScreen(); //I changed it to initalize Main Screen, as it should be.
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
