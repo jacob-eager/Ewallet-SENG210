@@ -1,12 +1,12 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;                  // added
+import java.io.IOException;                  
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;          // added
-import java.sql.ResultSet;                  // added
-import java.sql.SQLException;               // added
+import java.sql.PreparedStatement;          
+import java.sql.ResultSet;                  
+import java.sql.SQLException;               
 import java.sql.Statement;
 import java.util.Scanner;
 
@@ -15,16 +15,21 @@ public class DatabaseAccess {
 	private static String dbURL = "";
 	
 	private static Connection conn = null;
-	private static Statement stmt = null;
+	static Statement stmt = null;
 	 
-	 
-	// Establishes connection from .env file
+	
+	// Public interface for starting database
+	public static void startDB() {
+		getURL();
+		createConnection();
+	}
+	
+	// Fetches URL from .env file
 	public static void getURL() {
-		
+
 		try {
 			FileInputStream fileByteStream = new FileInputStream(".env");
 			Scanner inFS = new Scanner(fileByteStream);
-			
 			while(inFS.hasNext()) {
 				String currLine = inFS.nextLine().trim();
 				if (currLine.startsWith("DB_URL")) {
@@ -32,15 +37,14 @@ public class DatabaseAccess {
 					if (eq >= 0) {
 						dbURL = currLine.substring(eq + 1).trim(); // safer parsing
 					}
-					// System.out.println(dbURL);
 				}
 			}
 			inFS.close();
+			fileByteStream.close();
 		} 
 		catch (FileNotFoundException e) {
 			// default so login GUI isn't blocked if .env is missing
 			dbURL = "jdbc:derby:ewalletdb;create=true";
-			
 			e.printStackTrace();
 		}
 		catch (IOException e) {                 // added
@@ -48,21 +52,17 @@ public class DatabaseAccess {
 		}
 	}
 
-	public static void createConnection()
-    {
-        try
-        {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-            conn = DriverManager.getConnection(dbURL); 
-            // System.out.println("no worries");
-        }
-        catch (Exception except)
-        {
-        		// System.out.println("fail");
-            except.printStackTrace();
-        }
-    }
+	@SuppressWarnings("deprecation")
+	public static void createConnection() {
+		try {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+			conn = DriverManager.getConnection(dbURL);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
     
+	// Creates the schema and database from schema.sql if they don't exist
 	public static void initiateDB() {
 
 		String schemaText = "";
@@ -71,34 +71,30 @@ public class DatabaseAccess {
 				FileInputStream fileByteStream = new FileInputStream("schema.sql");
 				Scanner inFS = new Scanner(fileByteStream);) {
 
+			// Gets text from schema.sql
 			while (inFS.hasNext()) {
 				schemaText += inFS.nextLine() + "\n";
 			}
 
-			// Splits the different statements since Derby can only run one statement at a
-			// time
+			// Splits the different statements since Derby can only run one statement at a time
 			String[] statements = schemaText.split(";");
 
-			// Executes CREATE SCHEMA if the EWallet schema doesn't exist
+			// Checks if EWALLET schema exists
 			ResultSet results = st.executeQuery("SELECT SCHEMANAME FROM SYS.SYSSCHEMAS");
 			boolean schemaExists = false;
-
 			while (results.next()) {
 				String schemaName = results.getString(1);
 				if (schemaName.equals("EWALLET")) {
 					schemaExists = true;
-					// System.out.println("Schema exists!");
 				}
 			}
 
-			if (!schemaExists) {
-				st.executeUpdate(statements[0]);
-			}
+			// If the schema doesn't exist, executes CREATE SCHEMA statement
+			if (!schemaExists) st.executeUpdate(statements[0]);
 
-			// Creates tables if they don't exist
+			// Checks if each table exists
 			DatabaseMetaData dbmd = conn.getMetaData();
 			String[] types = { "TABLE" };
-
 			results = dbmd.getTables(null, "EWALLET", "%", types);
 			boolean usersExists = false;
 			boolean expenseExists = false;
@@ -108,30 +104,23 @@ public class DatabaseAccess {
 				String tableName = results.getString("TABLE_NAME");
 				if (tableName.equalsIgnoreCase("users")) {
 					usersExists = true;
-					// System.out.println("Users exists!");
 				}
 				if (tableName.equalsIgnoreCase("expense")) {
 					expenseExists = true;
-					// System.out.println("Expense exists!");
 				}
 				if (tableName.equalsIgnoreCase("wage")) {
 					wageExists = true;
-					// System.out.println("Wage exists!");
 				}
 			}
 
-			if (!usersExists) {
-				st.executeUpdate(statements[1]);
-			}
+			// If the tables don't exist, executes the CREATE TABLE statements
+			if (!usersExists) st.executeUpdate(statements[1]);
+			
+			if (!expenseExists) st.executeUpdate(statements[2]);
+			
+			if (!wageExists) st.executeUpdate(statements[3]);
 
-			if (!expenseExists) {
-				st.executeUpdate(statements[2]);
-			}
-
-			if (!wageExists) {
-				st.executeUpdate(statements[3]);
-			}
-
+			
 		} catch (FileNotFoundException e) {
 			System.out.println("schema.sql not found!");
 			e.printStackTrace();
@@ -140,7 +129,6 @@ public class DatabaseAccess {
 			if (!"X0Y32".equals(e.getSQLState()))
 				e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -187,4 +175,45 @@ public class DatabaseAccess {
             return false;
         }
     }
+    
+    // Shuts down connection
+    public static void shutdown()
+    {
+		try {
+			if (stmt != null) {
+				stmt.close();
+			}
+			if (conn != null) {
+				DriverManager.getConnection(dbURL + ";shutdown=true");
+				conn.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+    }
+    
+    // Executes a given query and returns the results
+	public static ResultSet resultsQuery(String sqlStatement) {
+		ResultSet results = null;
+		try {
+			stmt = conn.createStatement();
+			results = stmt.executeQuery(sqlStatement);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
+	// Executes a given query and does not return the results
+	public static void voidQuery(String sqlStatement) {
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sqlStatement); // executeUpdate returns an int, which is why these methods need to be different
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
