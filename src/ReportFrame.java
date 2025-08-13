@@ -81,7 +81,6 @@ public class ReportFrame extends JFrame implements ActionListener {
 		
 		
 		JPanel buttonsPanel = new JPanel();
-		// buttonsPanel.setBackground(Color.RED);
 		constraints.gridy = 2;
 		centerLock.add(buttonsPanel, constraints);
 		
@@ -130,7 +129,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			
 		// > 2 decimal places
 		default:
-			return s.substring(0, s.length() - (decimalPlaces - 2));  // Gets rid of excess decimal places (TODO: Doesn't round, just cuts off)
+			return s.substring(0, s.length() - (decimalPlaces - 2));  // Gets rid of excess decimal places
 		
 		}
 	}
@@ -264,7 +263,6 @@ public class ReportFrame extends JFrame implements ActionListener {
 				
 				JTable incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
 				tablePane = new JScrollPane(incomeTable);
-				tablePane.setBackground(Color.BLUE);
 				tablePane.setPreferredSize(new Dimension(400, 200));
 				
 				reportPanel.add(tablePane);
