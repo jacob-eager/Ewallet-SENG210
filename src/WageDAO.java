@@ -2,7 +2,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class WageDAO implements DatabaseAccessObject<Wage> {
+public class WageDAO implements DAOInterface<Wage> {
 
 	private User currentUser;
 	

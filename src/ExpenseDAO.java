@@ -2,7 +2,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ExpenseDAO implements DatabaseAccessObject<Expense> {
+public class ExpenseDAO implements DAOInterface<Expense> {
 
 	
 	User currentUser;

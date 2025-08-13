@@ -2,7 +2,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class UserDAO implements DatabaseAccessObject<User> {
+public class UserDAO implements DAOInterface<User> {
 
 	// Currently there is no user_id and username is used as the primary key instead
 	@Override

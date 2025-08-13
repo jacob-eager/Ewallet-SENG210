@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public interface DatabaseAccessObject<T> {
+public interface DAOInterface<T> {
 
 	T get(int id);
     
