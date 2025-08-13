@@ -1,0 +1,36 @@
+﻿﻿# Build artifacts
+*.class
+out/
+/bin/
+
+# Local DB + env
+ewalletdb/
+ewalletdb*/
+.env
+
+# Local jars (Derby)
+lib/
+
+# CSV exports
+*.csv
+
+# OS junk
+.DS_Store
+Thumbs.db
+. e n v 
+ 
+ ewalletdb/
+ewalletdb*/
+lib/
+*.class
+*.csv
+.vscode/
+
+# IDE artifacts
+.settings/
+.classpath
+.project
+
+.$ERD.drawio.bkp
+
+derby.log
