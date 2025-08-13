@@ -456,7 +456,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 		switch (filterBy.getSelectedItem().toString()) {
 		
 		case "Expense Source":
-			for (Expense e : currUser.getSpending()) {
+			for (Expense e : expenseAccess.getUserExpenses()) {
 				if (!filters.contains(e.source)) {
 					filters.add(e.source);
 				}
@@ -464,7 +464,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			break;
 			
 		case "Expense Frequency":
-			for (Expense e : currUser.getSpending()) {
+			for (Expense e : expenseAccess.getUserExpenses()) {
 				if (!filters.contains(Integer.toString(e.yearlyFrequency))) {
 					filters.add(Expense.yearlyFrequencyKey.getOrDefault(e.yearlyFrequency, 
 							Integer.toString(e.yearlyFrequency) + " times / year")); 
@@ -473,7 +473,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			break;
 			
 		case "Income Source":
-			for (Wage w : currUser.getIncome()) {
+			for (Wage w : wageAccess.getUserWages()) {
 				if (!filters.contains(w.source)) {
 					filters.add(w.source); 
 				}
@@ -481,7 +481,7 @@ public class ReportFrame extends JFrame implements ActionListener {
 			break;
 			
 		case "Income Month":
-			for (Wage w : currUser.getIncome()) {
+			for (Wage w : wageAccess.getUserWages()) {
 				if (!filters.contains(w.month)) {
 					filters.add(w.month); 
 				}
