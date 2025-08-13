@@ -70,7 +70,9 @@ public class EWalletApp {
                     allData.add(new User(username, password));
                     currUserIndex = 0;
                     frame.dispose();      // close login window (login GUI)
-                    initalizeMainScreen();      // open main screen after successful login (login GUI)
+                    //showReportGUI();      // open report after successful login (login GUI)
+					initalizeMainScreen(); //I changed it to initalize Main Screen, as it should be.
+
                 } else {
                     feedbackLabel.setText("Invalid Credentials!");
                 }
