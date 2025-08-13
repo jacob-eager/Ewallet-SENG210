@@ -290,7 +290,6 @@ public class ReportFrame extends JFrame implements ActionListener {
 				
 				incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
 				tablePane = new JScrollPane(incomeTable);
-				tablePane.setBackground(Color.BLUE);
 				tablePane.setPreferredSize(new Dimension(400, 200));
 				
 				reportPanel.add(tablePane);
@@ -364,7 +363,6 @@ public class ReportFrame extends JFrame implements ActionListener {
 		
 		JTable incomeTable = new JTable(new ReportTableModel(incomeTableData, incomeTableColumnNames));
 		JScrollPane tablePane = new JScrollPane(incomeTable);
-		tablePane.setBackground(Color.BLUE);
 		tablePane.setPreferredSize(new Dimension(400, 200));
 		
 		return tablePane;
